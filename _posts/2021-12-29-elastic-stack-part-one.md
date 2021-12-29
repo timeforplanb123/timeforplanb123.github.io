@@ -1,7 +1,7 @@
 ---
 layout: post
 title: Elastic stack. Part 1 
-summary: Overview of the Elastic Stack.
+summary: Overview of the Elastic stack.
 featured-img:
 categories: Linux Networking
 tags: [ elastic, notes, linux ]
