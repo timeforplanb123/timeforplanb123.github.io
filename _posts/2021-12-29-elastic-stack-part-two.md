@@ -10,7 +10,7 @@ tags: [ elastic, notes , linux]
 
 We have 3 data centers, each with 2 virtual machines on CentOS. The first machine will be Elasticsearch `data` + `master` node, second - Elasticsearch `coordinator` node + `Logstash`. And we will install and configure `Kibana` on one of the machines with Elasticsearch `coordinator` node. Yes, without redundancy and any http load balancer. Let's take a look at the diagram and our cluster design for this article:
 
-![]({{ site.url }}{{ site.baseurl }}/assets/img/posts/elsatic_stack/elastic_cluster.png)
+![]({{ site.url }}{{ site.baseurl }}/assets/img/posts/elastic_stack/elastic_cluster.png)
 
 Here we use the minimum hardware requirements for the machines from the [documentation](https://www.elastic.co/guide/en/cloud-enterprise/current/ece-prereqs.html){:target="_blank"}, except for disks. In our case, `data` nodes has 2 disks with 100 + 500Gb, and `coordinator` nodes has 2 disks with 50 + 50Gb.
 
@@ -136,7 +136,7 @@ Of course, Elasticsearch cluster design is an individual thing. The node roles a
 
 Let's take a look at the general data storage scheme, in our case:
 
-![]({{ site.url }}{{ site.baseurl }}/assets/img/posts/elsatic_stack/elastic_data.png)
+![]({{ site.url }}{{ site.baseurl }}/assets/img/posts/elastic_stack/elastic_data.png)
 
 Depending on the shard allocation routing settings, the master node will suggest the coordinator node, on which data nodes to store data. By default, for version 7.x, 3 data nodes and 1 data index:
 - 1 primary shard, 2 replica shards
@@ -145,7 +145,7 @@ Depending on the shard allocation routing settings, the master node will suggest
 
 Ok, it was about data writing, now let's talk about user search requests:
 
-![]({{ site.url }}{{ site.baseurl }}/assets/img/posts/elsatic_stack/elastic_search_requests.png)
+![]({{ site.url }}{{ site.baseurl }}/assets/img/posts/elastic_stack/elastic_search_requests.png)
 
 The coordinator node collects information from different data nodes depending on the search shard routing settings (by default, the round-robin mechanism is used) and then transmits it to the client.
 
