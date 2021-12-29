@@ -493,4 +493,5 @@ Now, we will:
 - configure the `Logstash`, write `syslog` parsers, using `grok`filter, send parsed data to `Elasticsearch` indecies and `Zabbix` with `elasticsearch` and `zabbix` output plugins
 - configure `Kibana`, write Index Lifecycle Policies (`ILM`), see useful buttons
 - configure `Elasticsearch` shard allocation routing
+
 But, in the next part of the article.
