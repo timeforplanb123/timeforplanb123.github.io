@@ -4,7 +4,7 @@ title: Elastic stack. Part 2
 summary: Let's build a simple Elasticsearch cluster from scratch.
 featured-img:
 categories: Linux Networking
-tags: [ elastic, notes , linux]
+tags: [ elastic, notes , linux ]
 ---
 ## Basic Installation
 
