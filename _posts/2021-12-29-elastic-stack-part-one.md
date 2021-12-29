@@ -121,4 +121,4 @@ By default, the node from a Elasticsearch cluster, has a data + ingest + master 
 
 Let's build such an Elasticsearch cluster and start it in the next part of this article
 
-![]({{ site.url }}{{ site.baseurl }}/assets/img/posts/elsatic_stack/elastic_cluster.png)
+![]({{ site.url }}{{ site.baseurl }}/assets/img/posts/elastic_stack/elastic_cluster.png)
