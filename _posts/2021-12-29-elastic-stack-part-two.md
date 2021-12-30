@@ -23,6 +23,7 @@ systemctl disable NetworkManager.service
 ```
 
 - configure interface:
+
 ```text
 vi /etc/sysconfig/network-script/ifcfg-ens192
 
