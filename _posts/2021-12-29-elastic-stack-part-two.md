@@ -21,6 +21,7 @@ chkonfig NetworkManager off
 # or
 systemctl disable NetworkManager.service
 ```
+
 - configure interface:
 ```text
 vi /etc/sysconfig/network-script/ifcfg-ens192
@@ -376,8 +377,8 @@ Second, on data+master nodes. If you, like me, configured nodes at different tim
 And, of course, this problem can be seen in `/var/log/elasticsearch-elk-cluster.log` - node can't connect to cluster with `UUID`.
 
 Usefull links on the topic:
-- https://discuss.elastic.co/t/change-es-cluster-uuid/193092
-- https://www.elastic.co/guide/en/elasticsearch/reference/current/node-tool.html#node-tool-detach-cluster
+- [https://discuss.elastic.co/t/change-es-cluster-uuid/193092](https://discuss.elastic.co/t/change-es-cluster-uuid/193092){:target="_blank"}
+- [https://www.elastic.co/guide/en/elasticsearch/reference/current/node-tool.html#node-tool-detach-cluster](https://www.elastic.co/guide/en/elasticsearch/reference/current/node-tool.html#node-tool-detach-cluster){"target="_blank"}
 
 So, we can resolve this problem with `elasticsearch-node` tool (see last link above). `elastcisearch-node` tool has many modes and very useful for cluster control. For our example we need to recreate cluster with new `UUID`. Do it as in [example](https://www.elastic.co/guide/en/elasticsearch/reference/current/node-tool.html#_unsafe_cluster_bootstrapping){:target="_blank"}:
 
@@ -478,15 +479,15 @@ Index Management - Data Streams - ilm-history - delete
 All is fine. Nice.
 
 Useful links to solve this problem:
-- https://www.cyberithub.com/how-to-delete-elasticsearch-unassigned-shards/
-- https://www.datadoghq.com/blog/elasticsearch-unassigned-shards/
-- https://discuss.elastic.co/t/cluster-health-status-is-red/284320/3
-- https://discuss.elastic.co/t/how-to-disable-geoip-usage-in-7-14-0/281076/13
-- https://discuss.elastic.co/t/unassigned-ilm-history-shard-cluster-in-red-state/246970
-- https://discuss.elastic.co/t/ilm-history-2-000001-unassigned-primary-shard-for-this-replica-is-not-yet-active/246978
-- https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-delete-index.html
-- https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-delete.html
-- https://fabianlee.org/2018/10/02/elk-deleting-unassigned-shards-to-restore-cluster-health/
+- [https://www.cyberithub.com/how-to-delete-elasticsearch-unassigned-shards/](https://www.cyberithub.com/how-to-delete-elasticsearch-unassigned-shards/){:target="_blank"}
+- [https://www.datadoghq.com/blog/elasticsearch-unassigned-shards/](https://www.datadoghq.com/blog/elasticsearch-unassigned-shards/){:target="_blank"}
+- [https://discuss.elastic.co/t/cluster-health-status-is-red/284320/3](https://discuss.elastic.co/t/cluster-health-status-is-red/284320/3){:target="_blank"}
+- [https://discuss.elastic.co/t/how-to-disable-geoip-usage-in-7-14-0/281076/13](https://discuss.elastic.co/t/how-to-disable-geoip-usage-in-7-14-0/281076/13){:target="_blank"}
+- [https://discuss.elastic.co/t/unassigned-ilm-history-shard-cluster-in-red-state/246970](https://discuss.elastic.co/t/unassigned-ilm-history-shard-cluster-in-red-state/246970){:target="_blank"}
+- [https://discuss.elastic.co/t/ilm-history-2-000001-unassigned-primary-shard-for-this-replica-is-not-yet-active/246978](https://discuss.elastic.co/t/ilm-history-2-000001-unassigned-primary-shard-for-this-replica-is-not-yet-active/246978){:target="_blank"}
+- [https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-delete-index.html](https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-delete-index.html){:target="_blank"}
+- [https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-delete.html](https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-delete.html){:target="_blank"}
+- [https://fabianlee.org/2018/10/02/elk-deleting-unassigned-shards-to-restore-cluster-health/](https://fabianlee.org/2018/10/02/elk-deleting-unassigned-shards-to-restore-cluster-health/){:target="_blank"}
 
 So, we have built an Elasticsearch cluster.
 Now, we will:
