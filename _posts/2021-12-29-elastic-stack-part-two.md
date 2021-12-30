@@ -16,6 +16,7 @@ Here we use the minimum hardware requirements for the machines from the [documen
 
 At first, configure the network on each machine:
 - disable NetworkManager. I don't like this tool, it cause me a lot of pain
+
 ```text
 chkonfig NetworkManager off
 # or
@@ -378,7 +379,7 @@ Second, on data+master nodes. If you, like me, configured nodes at different tim
 And, of course, this problem can be seen in `/var/log/elasticsearch-elk-cluster.log` - node can't connect to cluster with `UUID`.
 
 Usefull links on the topic:
-- [https://discuss.elastic.co/t/change-es-cluster-uuid/193092](https://discuss.elastic.co/t/change-es-cluster-uuid/193092){:target="_blank"}
+- [https://discuss.elastic.co/t/change-es-cluster-uuid/193092](https://discuss.elastic.co/t/change-es-cluster-uuid/193092)
 - [https://www.elastic.co/guide/en/elasticsearch/reference/current/node-tool.html#node-tool-detach-cluster](https://www.elastic.co/guide/en/elasticsearch/reference/current/node-tool.html#node-tool-detach-cluster){"target="_blank"}
 
 So, we can resolve this problem with `elasticsearch-node` tool (see last link above). `elastcisearch-node` tool has many modes and very useful for cluster control. For our example we need to recreate cluster with new `UUID`. Do it as in [example](https://www.elastic.co/guide/en/elasticsearch/reference/current/node-tool.html#_unsafe_cluster_bootstrapping){:target="_blank"}:
