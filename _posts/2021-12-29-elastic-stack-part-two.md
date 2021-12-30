@@ -6,6 +6,9 @@ featured-img:
 categories: Linux Networking
 tags: [ elastic, notes, linux ]
 ---
+- [Elastic stack. Part 1](https://timeforplanb123.github.io/elastic-stack-part-one/)
+- [Elastic stack. Part 2](https://timeforplanb123.github.io/elastic-stack-part-two/)
+
 ## Basic Installation
 
 We have 3 data centers, each with 2 virtual machines on CentOS. The first machine will be Elasticsearch `data` + `master` node, second - Elasticsearch `coordinator` node + `Logstash`. And we will install and configure `Kibana` on one of the machines with Elasticsearch `coordinator` node. Yes, without redundancy and any http load balancer. Let's take a look at the diagram and our cluster design for this article:
