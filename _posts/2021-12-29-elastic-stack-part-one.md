@@ -6,6 +6,9 @@ featured-img:
 categories: Linux Networking
 tags: [ elastic, notes, linux ]
 ---
+- [Elastic stack. Part 1](https://timeforplanb123.github.io/elastic-stack-part-one/)
+- [Elastic stack. Part 2](https://timeforplanb123.github.io/elastic-stack-part-two/)
+
 ## Overview of the Elastic Stack
 
 Elastic stack or ELK - stack from free software such as Elasticsearch, Logstash and Kibana. The full stack includes X-Pack and Beats components.
