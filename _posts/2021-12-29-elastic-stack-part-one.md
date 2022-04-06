@@ -78,7 +78,7 @@ By default, each new index creates a replica (one index = one shard with + one r
 
 ## Elasticsearch cluster. Overview of node roles
 
-1. node.master
+**node.master**
 
 the master node is responsible for all management actions in the Elasticsearch cluster:
 - creating and deleting indexes
@@ -87,31 +87,31 @@ the master node is responsible for all management actions in the Elasticsearch c
 
 There may be several master nodes in Elasticsearch cluster, then they form a quorum.
 
-2. node.data
+**node.data**
 
 - stores data
 - stored data includes executed search requests
 
-3. node.ingest
+**node.ingest**
 
 - simplified logstash functionality
 - performs part of the tasks of indexing documents
 
 If there is a logstash, then ingest.node is usually not used.
 
-4. coordination node
+**coordination node**
 
 - it's placed separately from ther Elasticsearch node roles
 - communicates with the master.node
 - responsible for the distribution of service and ssearch requests
 - works as load balancer
 
-5. node.ml
+**node.ml**
 
 - enables or disables the Machine Learning API for the node
 - useful for ML jobs without affecting other tasks
 
-6. node.voting_only
+**node.voting_only**
 
 - waiting to become a new master.node
 - relevant for large Elasticsearch clusters
