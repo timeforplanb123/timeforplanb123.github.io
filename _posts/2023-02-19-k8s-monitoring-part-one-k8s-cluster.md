@@ -636,7 +636,8 @@ root@devbox:~/Projects/k8s$ kubectl logs loki-deployment-567bc6d974-dvtl5
 
 For Pod, everything is simple. But how to view events on Ingress?
 
-- **find the `ingress-nginx-controller` Pod and namespace:**
+**find the `ingress-nginx-controller` Pod and namespace:**
+
 ```text
 root@devbox:~$ kubectl get pod --all-namespaces
 NAMESPACE       NAME                                        READY   STATUS      RESTARTS        AGE
@@ -655,7 +656,9 @@ kube-system     kube-proxy-rzndh                            1/1     Running     
 kube-system     kube-scheduler-minikube                     1/1     Running     30 (30h ago)    126d
 kube-system     storage-provisioner                         1/1     Running     107 (30h ago)   126d
 ```
-- **check the log in the found Pod and namespace:**
+
+**check the log in the found Pod and namespace:**
+
 ```text
 root@devbox:~$ kubectl logs -n ingress-nginx ingress-nginx-controller-5959f988fd-ptglc
 ...
