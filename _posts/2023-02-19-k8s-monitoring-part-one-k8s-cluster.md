@@ -511,7 +511,7 @@ spec:
 
 ## Apply and check Kubernetes cluster
 
-1. **Apply configuration**
+1. **Apply configuration**  
 ```text
 root@devbox:~/Projects/k8s$ ls
 grafana  ingress-service.yaml  loki  prometheus
@@ -538,7 +538,7 @@ persistentvolumeclaim/grafana-persistent-volume-claim created
 root@devbox:~/Projects/k8s$ kubectl apply -f .
 ingress.networking.k8s.io/ingress-service created
 ```
-2. **Check the availability of services**
+2. **Check the availability of services**  
 Because the cluster is on a minikube VM, then to access to services from outside the cluster you need to use the minikube VM ip:
 ```text
 root@devbox:~/Projects/k8s$ minikube ip
@@ -558,7 +558,7 @@ https://192.168.49.2
 # Grafana datasources
 https://192.168.49.2/datasources
 ```
-3. **Debugging**
+3. **Debugging**  
 To debug the http services inside the Kubernetes cluster, it is useful to have a Pod with curl on board. I run such a Pod:
 ```text
 root@devbox:~/Projects/k8s$ kubectl run curlpod --image=curlimages/curl
@@ -601,7 +601,7 @@ Address:    10.96.0.10:53
 ring_member_tokens_to_own{name="compactor"} 1
 ring_member_tokens_to_own{name="scheduler"} 1
 ```
-4. **Logs**
+4. **Logs**  
 To debug events inside the Pod, you can view the log, for example:
 ```text
 root@devbox:~/Projects/k8s$ kubectl get pod
