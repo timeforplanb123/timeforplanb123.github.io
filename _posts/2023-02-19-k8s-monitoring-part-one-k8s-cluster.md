@@ -575,7 +575,8 @@ root@devbox:~/Projects/k8s$ kubectl run curlpod --image=curlimages/curl
 
 For example, to check any changes in the Loki configuration bypassing Ingress, you can:
 
-- **find out the ClusterIP ip for Loki:**
+**find out the ClusterIP ip for Loki:**
+
 ```text
 root@devbox:~/Projects/k8s$ kubectl get service -o wide
 NAME                               TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)    AGE    SELECTOR
@@ -584,7 +585,8 @@ kubernetes                         ClusterIP   10.96.0.1        <none>        44
 loki-cluster-ip-service            ClusterIP   10.100.46.66     <none>        3100/TCP   61d    component=loki
 prometheus-cluster-ip-service      ClusterIP   10.107.49.254    <none>        9090/TCP   69d    component=prometheus
 ```
-- **open `sh` in curlpod:**
+**open `sh` in curlpod:**
+
 ```text
 root@devbox:~/Projects/k8s$ kubectl get pod
 NAME                                       READY   STATUS      RESTARTS       AGE
@@ -596,7 +598,9 @@ prometheus-deployment-7b4d56c8bc-6tc2d     1/1     Running     3 (30h ago)    15
 root@devbox:~/Projects/k8s$ kubectl exec -it curlpod -- sh
 / $
 ```
-- **check Loki ClusterIP DNS name via Kubernetes coredns from running curlpod:**
+
+**check Loki ClusterIP DNS name via Kubernetes coredns from running curlpod:**
+
 ```text
 / $ nslookup 10.100.46.66
 Server:     10.96.0.10
@@ -604,13 +608,16 @@ Address:    10.96.0.10:53
 
 66.46.100.10.in-addr.arpa   name = loki-cluster-ip-service.default.svc.cluster.local
 ```
-- **send `GET` with `curl` from curlpod:**
+
+**send `GET` with `curl` from curlpod:**
+
 ```text
 / $ curl http://loki-cluster-ip-service.default.svc.cluster.local:3100/metrics
 ...
 ring_member_tokens_to_own{name="compactor"} 1
 ring_member_tokens_to_own{name="scheduler"} 1
 ```
+
 ### Logs
 
 To debug events inside the Pod, you can view the log, for example:
