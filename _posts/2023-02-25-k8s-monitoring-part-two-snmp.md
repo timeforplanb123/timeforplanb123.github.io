@@ -69,7 +69,6 @@ HUAWEI-MIB::hwDatacomm.42.2.1.16.1.2
 hwDatacomm OBJECT-TYPE
   -- FROM   HUAWEI-MIB
 ::= { iso(1) org(3) dod(6) internet(1) private(4) enterprises(1) huawei(2011) huaweiMgmt(5) hwDatacomm(25) 42 2 1 16 1 2 }
-
 ~/.snmp/mibs$ snmptranslate -M ./:/usr/share/snmp/mibs/ietf:/usr/share/snmp/mibs/iana -Ln -Td HUAWEI-MIB:hwVlan
 HUAWEI-MIB::hwVlan
 hwVlan OBJECT-TYPE
