@@ -36,7 +36,7 @@ MIB browser will provide a convenient search through the MIB trees.
 
 1. Find the MIB for interested network device:
 - public MIBs can be found on the vendor's resources. In addition to the MIB, there can be references with the MIB tree structure, OID descriptions, public MIBs, MIB browser usage examples.
-- for example, here - [http://www.circitor.fr/Mibs/Mibs.php](http://www.circitor.fr/Mibs/Mibs.php){:target="_blank"} . From here I downloaded HUAWEI-MIB - `~/.snmp/mibs$ curl http://www.circitor.fr/Mibs/Mib/H/HUAWEI-MIB.mib > HUAWEI-MIB.mib`
+- for example, here - [http://www.circitor.fr/Mibs/Mibs.php](http://www.circitor.fr/Mibs/Mibs.php){:target="_blank"} . From here I downloaded HUAWEI-MIB - `~/.snmp/mibs$ curl http://www.circitor.fr/Mibs/Mib/H/HUAWEI-MIB.mib > HUAWEI-MIB.mib`  
 2. Open the downloaded MIB, for example, `HUAWEI-MIB.mib` with any text editor, look at the dependency on other MIBs:
 ```text
 HUAWEI-MIB DEFINITIONS ::= BEGIN
