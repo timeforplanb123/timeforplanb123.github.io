@@ -91,18 +91,12 @@ hwVlan OBJECT-TYPE
 HUAWEI-MIB::hwDatacomm.31.1.1.1.1.5
 ```
 And, of course, all options are described in the `snmptranslate --help`.  Here only the ones used above:
-`-M` - directories with MIBs (`./` - the current directory with `HUAWEI-MIB.mib`, `/usr/share/snmp/mibs/ietf:/usr/share/snmp/mibs/iana` - directories with loaded default MIBs).
-
-`-Ln` - don't sow logs on stdout, thus don't show the MIB hierarchy errors.
-
-`-Td` - `-T` option is a set various options controlling report produced. There are very useful options here. For example `-Td` prints full OID details, including MIB name + any MIB data described given OID (MAX-ACCESS, STATUS, DESCRIPTION). The `-Td`, `-Tp`, `-Tdp` overlap each other, the last one in the chain is used.
-
-`-Onf` - `-O` option toggles the various defaults that control the output display. `-Onf` shows OID numbers (`n`), show all OIDs (`f`). `f` flag overrides `n` flag here. 
-
-`-OS` - print MIB module-id plus last element
-
-`-m` - specify list of MIB or all MIBs with `ALL` value
-
+- `-M` - directories with MIBs (`./` - the current directory with `HUAWEI-MIB.mib`, `/usr/share/snmp/mibs/ietf:/usr/share/snmp/mibs/iana` - directories with loaded default MIBs).
+- `-Ln` - don't sow logs on stdout, thus don't show the MIB hierarchy errors.
+- `-Td` - `-T` option is a set various options controlling report produced. There are very useful options here. For example `-Td` prints full OID details, including MIB name + any MIB data described given OID (MAX-ACCESS, STATUS, DESCRIPTION). The `-Td`, `-Tp`, `-Tdp` overlap each other, the last one in the chain is used.
+- `-Onf` - `-O` option toggles the various defaults that control the output display. `-Onf` shows OID numbers (`n`), show all OIDs (`f`). `f` flag overrides `n` flag here. 
+- `-OS` - print MIB module-id plus last element
+- `-m` - specify list of MIB or all MIBs with `ALL` value
 - **if there are loaded MIBs in the current directory for different network devices, then you can check for the same OID:**
 ```text
 snmptranslate -M ./ -m ALL -Ts -Ln | grep OID 
