@@ -62,7 +62,7 @@ or by the OID name:
    |
    +--hwBRASMib(40)
 ```
-- **search some OIDs:**
+- **search some OIDs:**  
 ```text
 ~/.snmp/mibs$ snmptranslate -M ./:/usr/share/snmp/mibs/ietf:/usr/share/snmp/mibs/iana -Ln -Td HUAWEI-MIB::hwDatacomm.42.2.1.16.1.2
 HUAWEI-MIB::hwDatacomm.42.2.1.16.1.2
