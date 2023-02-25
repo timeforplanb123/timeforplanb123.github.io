@@ -91,21 +91,20 @@ hwVlan OBJECT-TYPE
 HUAWEI-MIB::hwDatacomm.31.1.1.1.1.5
 ```
 And, of course, all options are described in the `snmptranslate --help`.  Here only the ones used above:
-- `-M` - directories with MIBs (`./` - the current directory with `HUAWEI-MIB.mib`, `/usr/share/snmp/mibs/ietf:/usr/share/snmp/mibs/iana` - directories with loaded default MIBs).
-- `-Ln` - don't sow logs on stdout, thus don't show the MIB hierarchy errors.
-- `-Td` - `-T` option is a set various options controlling report produced. There are very useful options here. For example `-Td` prints full OID details, including MIB name + any MIB data described given OID (MAX-ACCESS, STATUS, DESCRIPTION). The `-Td`, `-Tp`, `-Tdp` overlap each other, the last one in the chain is used.
-- `-Onf` - `-O` option toggles the various defaults that control the output display. `-Onf` shows OID numbers (`n`), show all OIDs (`f`). `f` flag overrides `n` flag here. 
-- `-OS` - print MIB module-id plus last element
-- `-m` - specify list of MIB or all MIBs with `ALL` value
+  `-M` - directories with MIBs (`./` - the current directory with `HUAWEI-MIB.mib`, `/usr/share/snmp/mibs/ietf:/usr/share/snmp/mibs/iana` - directories with loaded default MIBs).
+  `-Ln` - don't sow logs on stdout, thus don't show the MIB hierarchy errors.
+  `-Td` - `-T` option is a set various options controlling report produced. There are very useful options here. For example `-Td` prints full OID details, including MIB name + any MIB data described given OID (MAX-ACCESS, STATUS, DESCRIPTION). The `-Td`, `-Tp`, `-Tdp` overlap each other, the last one in the chain is used.
+  `-Onf` - `-O` option toggles the various defaults that control the output display. `-Onf` shows OID numbers (`n`), show all OIDs (`f`). `f` flag overrides `n` flag here. 
+  `-OS` - print MIB module-id plus last element
+  `-m` - specify list of MIB or all MIBs with `ALL` value
 - **if there are loaded MIBs in the current directory for different network devices, then you can check for the same OID:**
 ```text
 snmptranslate -M ./ -m ALL -Ts -Ln | grep OID 
 ```
-- **search MIB objects by regular expressions(`-TB` option):**
-I downloaded HUAWEI-ENTITY-EXTENT-MIB for this example - `~/.snmp/mibs$ curl http://www.circitor.fr/Mibs/Mib/H/HUAWEI-ENTITY-EXTENT-MIB.mib > HUAWEI-ENTITY-EXTENT-MIB.mib`.
+- **search MIB objects by regular expressions(`-TB` option):**  
+I downloaded HUAWEI-ENTITY-EXTENT-MIB for this example - `~/.snmp/mibs$ curl http://www.circitor.fr/Mibs/Mib/H/HUAWEI-ENTITY-EXTENT-MIB.mib > HUAWEI-ENTITY-EXTENT-MIB.mib`.  
 ```text
 # the value of the `-M` option should be the directory with HUAWEI-ENTITY-EXTENT-MIB (./) and with all imported MIB (/usr/share/snmp/mibs/ietf:/usr/share/snmp/mibs/iana)
-
 ~/.snmp/mibs$ snmptranslate -M ./:/usr/share/snmp/mibs/ietf:/usr/share/snmp/mibs/iana -m HUAWEI-ENTITY-EXTENT-MIB -TB hwEntityMem
 HUAWEI-ENTITY-EXTENT-MIB::hwEntityMemUsed
 HUAWEI-ENTITY-EXTENT-MIB::hwEntityMemoryAvgUsage
@@ -114,7 +113,8 @@ HUAWEI-ENTITY-EXTENT-MIB::hwEntityMemSizeMega
 HUAWEI-ENTITY-EXTENT-MIB::hwEntityMemSize
 HUAWEI-ENTITY-EXTENT-MIB::hwEntityMemUsageThreshold
 HUAWEI-ENTITY-EXTENT-MIB::hwEntityMemUsage
-
+```
+```text
 ~/.snmp/mibs$ snmptranslate -M ./:/usr/share/snmp/mibs/ietf:/usr/share/snmp/mibs/iana -m HUAWEI-ENTITY-EXTENT-MIB -TB hwEntityMem*
 HUAWEI-ENTITY-EXTENT-MIB::hwEntityMemUsed
 HUAWEI-ENTITY-EXTENT-MIB::hwEntityMemoryAvgUsage
@@ -123,7 +123,8 @@ HUAWEI-ENTITY-EXTENT-MIB::hwEntityMemSizeMega
 HUAWEI-ENTITY-EXTENT-MIB::hwEntityMemSize
 HUAWEI-ENTITY-EXTENT-MIB::hwEntityMemUsageThreshold
 HUAWEI-ENTITY-EXTENT-MIB::hwEntityMemUsage
-
+```
+```text
 ~/.snmp/mibs$ snmptranslate -M ./:/usr/share/snmp/mibs/ietf:/usr/share/snmp/mibs/iana -m HUAWEI-ENTITY-EXTENT-MIB -On -TB hwEntityMem*
 .1.3.6.1.4.1.2011.5.25.31.1.1.1.1.37
 .1.3.6.1.4.1.2011.5.25.31.1.1.1.1.36
@@ -194,13 +195,16 @@ Using HUAWEI-MIB, I'll check some OIDs on test huawei switch (I have `HUAWEI-MIB
 ```text
 ~/.snmp/mibs$ snmpwalk -v2c -c public 192.168.0.3 HUAWEI-MIB::hwDatacomm.42.2.1.16.1.3.0
 HUAWEI-MIB::hwDatacomm.42.2.1.16.1.3.0 = INTEGER: 16384
-
+```
+```text
 ~/.snmp/mibs$ snmpget -v2c -c public 192.168.0.3 HUAWEI-MIB::hwDatacomm.42.2.1.16.1.3.0
 HUAWEI-MIB::hwDatacomm.42.2.1.16.1.3.0 = INTEGER: 16384
-
+```
+```text
 ~/.snmp/mibs$ snmpget -v2c -c public -On 192.168.0.3 HUAWEI-MIB::hwDatacomm.42.2.1.16.1.3.0
 .1.3.6.1.4.1.2011.5.25.42.2.1.16.1.3.0 = INTEGER: 16384
-
+```
+```text
 ~/.snmp/mibs$ snmpget -v2c -c public 192.168.0.3 .1.3.6.1.4.1.2011.5.25.42.2.1.16.1.3.0
 HUAWEI-MIB::hwDatacomm.42.2.1.16.1.3.0 = INTEGER: 16384
 ```
@@ -208,6 +212,5 @@ HUAWEI-MIB::hwDatacomm.42.2.1.16.1.3.0 = INTEGER: 16384
 
 ## Tips
 The `_` symbol is not supported by snmp utilities. You can solve it like this:
-
 - `sed -i 's/_/-/' *`
 - use the `-Pu` flag (allow underlines in the MIB)
