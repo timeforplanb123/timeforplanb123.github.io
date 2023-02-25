@@ -250,9 +250,9 @@ spec:
 `Pod` is an object that can contain either one or a group of containers.
 
 Why Deployment and not a Pod?
-1. The Deployment object allows you to flexibly change the fields in the configuration file, unlike the Pod object. For example, for an already created Pod, it is not possible to update `ports.containerPort`, this will show an error `The Pod "pod-name" is invalid: spec: Forbidden: pod updates may not change fields other than 'spec.containers[*].image', 'spec.initContainers[*].image', ...`
-2. Deployment monitors the status of each Pod. If the iPod is broken, restarts it
-3. Deployment is suitable for both development and production
+- The Deployment object allows you to flexibly change the fields in the configuration file, unlike the Pod object. For example, for an already created Pod, it is not possible to update `ports.containerPort`, this will show an error `The Pod "pod-name" is invalid: spec: Forbidden: pod updates may not change fields other than 'spec.containers[*].image', 'spec.initContainers[*].image', ...`
+- Deployment monitors the status of each Pod. If the iPod is broken, restarts it
+- Deployment is suitable for both development and production
 
 And here are my Deployment objects with comments:
 
