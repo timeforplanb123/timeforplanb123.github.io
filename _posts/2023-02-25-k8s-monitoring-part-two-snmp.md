@@ -20,19 +20,15 @@ There is nothing more permanent than temporary. Originally conceived as a tempor
 The host here is Ubuntu Desktop. I'll prepare it for working with SNMP and OIDs searching:
 
 1. Install a standard set of MIBs on host. Vendors' MIBs are based on these MIBs:
-
 ```text
 sudo apt install snmp-mibs-downloader
 ```
-
 Now the default MIBs are installed in `/usr/share/snmp/mibs/` directory. Here are IF-MIB, SNMPv2-MIB and many others. For example, IF-MIB, as a rule, is a universal module and contains the OIDs with network interface parameters (here are interface name, mtu, description, mac-address, etc.). For most network devices, this MIB is enough to get the necessary data.
-
 2. Install the CLI utilities for working with MIB and SNMP (snmpwalk, snmpget, snmptranslate, snmptable):
 
 ```text
 sudo apt install snmp
 ```
-
 3. Find any MIB browser. Ireasoning is ok, there are app for all platforms - [https://www.easysnmp.com/tools/snmp-browsers/](https://www.easysnmp.com/tools/snmp-browsers){:target="_blank"}
 MIB browser will provide a convenient search through the MIB trees.
 
@@ -81,7 +77,7 @@ or by the OID name:
 - **search some OIDs:**
 
 ```text
-snmptranslate -M ./:/usr/share/snmp/mibs/ietf:/usr/share/snmp/mibs/iana -Ln -Td HUAWEI-MIB::hwDatacomm.42.2.1.16.1.2
+~/.snmp/mibs$ snmptranslate -M ./:/usr/share/snmp/mibs/ietf:/usr/share/snmp/mibs/iana -Ln -Td HUAWEI-MIB::hwDatacomm.42.2.1.16.1.2
 HUAWEI-MIB::hwDatacomm.42.2.1.16.1.2
 hwDatacomm OBJECT-TYPE
   -- FROM   HUAWEI-MIB
