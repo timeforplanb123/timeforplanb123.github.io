@@ -511,7 +511,8 @@ spec:
 
 ## Apply and check Kubernetes cluster
 
-1. **Apply configuration**  
+### Apply configuration
+
 ```text
 root@devbox:~/Projects/k8s$ ls
 grafana  ingress-service.yaml  loki  prometheus
@@ -538,16 +539,21 @@ persistentvolumeclaim/grafana-persistent-volume-claim created
 root@devbox:~/Projects/k8s$ kubectl apply -f .
 ingress.networking.k8s.io/ingress-service created
 ```
-2. **Check the availability of services**  
+
+### Check the availability of services
+
 Because the cluster is on a minikube VM, then to access to services from outside the cluster you need to use the minikube VM ip:
+
 ```text
 root@devbox:~/Projects/k8s$ minikube ip
 192.168.49.2
 ```
+
 http routing is configured on Ingress. All links containing `/(prometheus.*)` and `/(loki.*)`, will be addressed to the corresponding prometheus and loki ClusterIP services (ports `9090` for prometheus and `3100` for loki), and everything else, `/(.*)` - will be addressed to grafana ClusterIP (port `3000`).
 At the same time, each service must wait for a request along the appropriate path. For prometheus, this is implemented by the argument when starting the container - `--web.external-url=https://localhost:9090/prometheus/`, for loki, you need to define the `path_prefix` directive (when defined, the given prefix will be present in front of the endpoint paths) in ConfigMap and then, for example, path `https://localhost:3100/loki/api/v1/status/buildinfo ` will be active. And for grafana, the default settings are used.
 
 Checking accessibility from the browser:
+
 ```text
 # Prometheus
 https://192.168.49.2/prometheus
@@ -558,13 +564,17 @@ https://192.168.49.2
 # Grafana datasources
 https://192.168.49.2/datasources
 ```
-3. **Debugging**  
+
+### Debugging
+
 To debug the http services inside the Kubernetes cluster, it is useful to have a Pod with curl on board. I run such a Pod:
+
 ```text
 root@devbox:~/Projects/k8s$ kubectl run curlpod --image=curlimages/curl
 ```
 
 For example, to check any changes in the Loki configuration bypassing Ingress, you can:
+
 - **find out the ClusterIP ip for Loki:**
 ```text
 root@devbox:~/Projects/k8s$ kubectl get service -o wide
@@ -601,8 +611,10 @@ Address:    10.96.0.10:53
 ring_member_tokens_to_own{name="compactor"} 1
 ring_member_tokens_to_own{name="scheduler"} 1
 ```
-4. **Logs**  
+### Logs
+
 To debug events inside the Pod, you can view the log, for example:
+
 ```text
 root@devbox:~/Projects/k8s$ kubectl get pod
 NAME                                       READY   STATUS    RESTARTS       AGE
@@ -614,7 +626,9 @@ prometheus-deployment-7b4d56c8bc-6tc2d     1/1     Running   3 (30h ago)    15d
 root@devbox:~/Projects/k8s$ kubectl logs loki-deployment-567bc6d974-dvtl5
 ...
 ```
+
 For Pod, everything is simple. But how to view events on Ingress?
+
 - **find the `ingress-nginx-controller` Pod and namespace:**
 ```text
 root@devbox:~$ kubectl get pod --all-namespaces
