@@ -38,7 +38,7 @@ I use ConfigMap to take the configuration outside of the image container and sto
 
 And here are my ConfigMap objects with comments:
 
-- **Prometheus ConfigMap:**
+**Prometheus ConfigMap:**
 
 ```yaml
 # prometheus-config-map.yaml
@@ -60,7 +60,7 @@ data:
   prometheus_rules.yml: |-
 ```
 
-- **Loki ConfigMap:**
+**Loki ConfigMap:**
 
 ```yaml
 # loki-config-map.yaml
@@ -132,7 +132,7 @@ data:
   loki_rules.yml: |-
 ```
 
-- **Grafana ConfigMap:**
+**Grafana ConfigMap:**
 
 ```yaml
 # grafana-config-datasources-map.yaml
@@ -191,7 +191,7 @@ standard (default)   k8s.io/minikube-hostpath   Delete          Immediate       
 
 And here are my PVC objects with comments:
 
-- **Prometheus PVC:**
+**Prometheus PVC:**
 
 ```yaml
 # prometheus-persistent-volume-claim.yaml
@@ -211,7 +211,7 @@ spec:
       storage: 1Gi
 ```
 
-- **Loki PVC:**
+**Loki PVC:**
 
 ```yaml
 # loki-persistent-volume-claim.yaml
@@ -227,7 +227,7 @@ spec:
       storage: 1Gi 
 ```
 
-- **Grafana PVC:**
+**Grafana PVC:**
 
 ```yaml
 # grafana-persistent-volume-claim.yaml
@@ -256,7 +256,7 @@ Why Deployment and not a Pod?
 
 And here are my Deployment objects with comments:
 
-- **Prometheus Deployment:**
+**Prometheus Deployment:**
 
 ```yaml
 # prometheus-deployment.yaml
@@ -312,7 +312,7 @@ spec:
               mountPath: /prometheus/
 ```
 
-- **Loki Deployment:**
+**Loki Deployment:**
 
 ```yaml
 # loki-deployment.yaml
@@ -356,7 +356,7 @@ spec:
               mountPath: /loki/
 ```
 
-- **Grafana Deployment:**
+**Grafana Deployment:**
 
 ```yaml
 # grafana-deployment.yaml
@@ -407,7 +407,7 @@ If incoming traffic is not needed, you can only use Deployment object without Se
 
 And here are my ClusterIP objects with comments:
 
-- **Prometheus ClusterIP:**
+**Prometheus ClusterIP:**
 
 ```yaml
 # prometheus-cluster-ip-service.yaml
@@ -427,7 +427,7 @@ spec:
       targetPort: 9090
 ```
 
-- **Loki ClusterIP:**
+**Loki ClusterIP:**
 
 ```yaml
 # loki-cluster-ip-service.yaml
@@ -444,7 +444,7 @@ spec:
       targetPort: 3100
 ```
 
-- **Grafana ClusterIP:**
+**Grafana ClusterIP:**
 
 ```yaml
 # grafana-cluster-ip-service.yaml
