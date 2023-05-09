@@ -8,6 +8,7 @@ tags: [ grafana, prometheus, loki, kubernetes, notes, linux ]
 ---
 - [Monitoring with Prometheus, Loki, Grafana and Kubernetes. Part 1. Kubernetes cluster](https://timeforplanb123.github.io/k8s-monitoring-part-one-k8s-cluster/)
 - [Monitoring with Prometheus, Loki, Grafana and Kubernetes. Part 2. SNMP](https://timeforplanb123.github.io/k8s-monitoring-part-two-snmp/)
+- [Monitoring with Prometheus, Loki, Grafana and Kubernetes. Part 3. Gitlab Agent](https://timeforplanb123.github.io/k8s-monitoring-part-three-gitlab-agent/)
 
 There is no specific purpose here, it is about service monitoring inside and outside the Kubernetes cluster. And in this part about basic configuration of Kubernetes monitoring cluster.
 
