@@ -8,6 +8,7 @@ tags: [ grafana, prometheus, loki, kubernetes, notes, linux ]
 ---
 - [Monitoring with Prometheus, Loki, Grafana and Kubernetes. Part 1. Kubernetes cluster](https://timeforplanb123.github.io/k8s-monitoring-part-one-k8s-cluster/)
 - [Monitoring with Prometheus, Loki, Grafana and Kubernetes. Part 2. SNMP](https://timeforplanb123.github.io/k8s-monitoring-part-two-snmp/)
+- [Monitoring with Prometheus, Loki, Grafana and Kubernetes. Part 3. Gitlab Agent](https://timeforplanb123.github.io/k8s-monitoring-part-three-gitlab-agent/)
 
 SNMP in 2023? 
 There is nothing more permanent than temporary. Originally conceived as a temporary protocol, SNMP firmly settled in the world of network devices. Yes, in 2023, SNMP has not lost its relevance. Before talking about Prometheus SNMP Exporter and Prometheus SNMP Config Generator, I would like to write a simple note on how to search SNMP OIDs.
