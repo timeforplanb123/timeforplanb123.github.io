@@ -185,16 +185,16 @@ And now it's time to install the Gitlab Agent to my Kubernetes Production cluste
 
 - Authorize the agent to access your projects (if the project is the only one - this is optional, see [docs](https://docs.gitlab.com/ee/user/clusters/agent/ci_cd_workflow.html#authorize-the-agent){:target="_blank"}) with `.gitlab/agents/k8s/config.yaml` file:
 
-```text
-# add to .gitlab/agents/k8s/config.yaml
-ci_access:
-  projects:
-    - id: my_gitlab_username/project
-```
+    ```text
+    # add to .gitlab/agents/k8s/config.yaml
+    ci_access:
+      projects:
+        - id: my_gitlab_username/project
+    ```
 - Register the agent with GitLab UI. Select `k8s Gitlab project > Infrastructure > Kubernetes clusters > Actions > Connect with Agent > Select an Agent (k8s agent) > Register Agent` and copy the command under "Recommended installation method". For my Gitlab 14.8 it looks like:
-```text
-docker run --pull=always --rm     registry.gitlab.com/gitlab-org/cluster-integration/gitlab-agent/cli:stable generate     --agent-token=my_token --kas-address=wss://gitlab.my.domain//-/kubernetes-agent     --agent-version stable     --namespace gitlab-kubernetes-agent
-```
+    ```text
+    docker run --pull=always --rm     registry.gitlab.com/gitlab-org/cluster-integration/gitlab-agent/cli:stable generate     --agent-token=my_token --kas-address=wss://gitlab.my.domain//-/kubernetes-agent     --agent-version stable     --namespace gitlab-kubernetes-agent
+    ```
 
 But, before installing gitlab-agent in the Production cluster with this command, I need to add `ca.crt` to the list of trusted certificates. This [issue](https://gitlab.com/gitlab-org/gitlab/-/issues/280518){:target="_blank"} describes how this can be done. I'll just repeat on a machine with a Production Kubernetes cluster:
 
