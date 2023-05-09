@@ -93,7 +93,7 @@ The Gitlab configuration is stored in the `/etc/gitlab/gitlab.rb` file. I do acc
 sudo vi /etc/gitlab/gitlab.rb
 
 # configure this options
-external_url "https://gitlab.example.com"
+external_url "https://gitlab.my.domain"
 letsencrypt['enable'] = false
 
 # enable redirect from http to https:
@@ -311,7 +311,7 @@ About this pipeline:
 
     Other related issues:
 
-    - [issue 1](https://gitlab.com/gitlab-org/gitlab/-/issues/366955). Here is useful [note](https://gitlab.com/gitlab-org/gitlab/-/issues/366955#note_1190457929){:target="_blank"} about SSL_CERT_FILE and apk usage
+    - [issue 1](https://gitlab.com/gitlab-org/gitlab/-/issues/366955){:target="_blank"}. Here is useful [note](https://gitlab.com/gitlab-org/gitlab/-/issues/366955#note_1190457929){:target="_blank"} about SSL_CERT_FILE and apk usage
 
     - [issue 2](https://gitlab.com/gitlab-org/gitlab/-/issues/366957){:target="_blank"}
 
