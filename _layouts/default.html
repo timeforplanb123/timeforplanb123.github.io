@@ -1,58 +1,41 @@
 ---
-layout: compress
 ---
 
-<style type="text/css">
-.post-card__label {
-position: absolute;
-top: 0.6rem;
-left: 0.6rem;
-z-index: 2;
-}
-</style>
+<!doctype html>
+<!--
+  Minimal Mistakes Jekyll Theme 4.24.0 by Michael Rose
+  Copyright 2013-2020 Michael Rose - mademistakes.com | @mmistakes
+  Free for personal and commercial use under the MIT license
+  https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE
+-->
+<html lang="{{ site.locale | slice: 0,2 | default: "en" }}" class="no-js">
+  <head>
+    {% include head.html %}
+    {% include head/custom.html %}
+  </head>
 
-<!DOCTYPE html>
-<html lang="{{ page.lang | default: site.lang | default: "en-US" }}">
+  <body class="layout--{{ page.layout | default: layout.layout }}{% if page.classes or layout.classes %}{{ page.classes | default: layout.classes | join: ' ' | prepend: ' ' }}{% endif %}">
+    {% include_cached skip-links.html %}
+    {% include_cached masthead.html %}
 
-  {% include head.html %}
+    <div class="initial-content">
+      {{ content }}
+    </div>
 
-  <body class="site">
-
-    {% if site.google_tag_manager %}
-
-      <!-- Google Tag Manager (noscript) -->
-      <noscript><iframe src="https://www.googletagmanager.com/ns.html?id={{ site.google_tag_manager }}"
-      height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-      <!-- End Google Tag Manager (noscript) -->
-
+    {% if site.search == true %}
+      <div class="search-content">
+        {% include_cached search/search_form.html %}
+      </div>
     {% endif %}
 
-    {% include header.html %}
-	
-<!--
-    <div class="hero lazyload" data-bg="{{ site.url }}{{ site.baseurl }}/assets/img/{{ site.hero_img }}">
-      <div class="hero__wrap">
-        <h1 class="hero__title">{{ site.title | escape }}</h1>
-        <p class="hero__meta">{{ site.tagline }}</p>
-      </div>
+    <div id="footer" class="page__footer">
+      <footer>
+        {% include footer/custom.html %}
+        {% include_cached footer.html %}
+      </footer>
     </div>
--->
 
-    <main class="site__content">
-      <section class="blog">
-        <div class="container">
-          <div style="padding-top:3.5em; margin-top:3em;" class="post-list" itemscope="" itemtype="http://schema.org/Blog">
-            {% for post in paginator.posts %}
-              {% include card.html %}
-            {% endfor %}
-				{% include pagination.html %}
-          </div>
-        </div>
-      </section>
-    </main>
-
-    {% include footer.html %}
+    {% include scripts.html %}
 
   </body>
-
 </html>

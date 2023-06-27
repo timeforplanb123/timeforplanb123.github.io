@@ -1,16 +1,28 @@
 ---
-layout: post
-title: Monitoring with Prometheus, Loki, Grafana and Kubernetes. Part 3
-summary: How to connect a Kubernetes cluster to Gitlab
-featured-img:
-categories: Linux Monitoring Kubernetes
-tags: [ grafana, prometheus, loki, kubernetes, notes, linux, gitlab ]
+title: Monitoring with Prometheus, Loki, Grafana and Kubernetes. Part 3. Gitlab Agent
+excerpt: "How to connect a Kubernetes cluster to Gitlab."
+categories:
+  - kubernetes
+tags:
+  - kubernetes
+  - gitlab
+toc: true
+toc_label: "Getting Started"
 ---
-- [Monitoring with Prometheus, Loki, Grafana and Kubernetes. Part 1. Kubernetes cluster](https://timeforplanb123.github.io/k8s-monitoring-part-one-k8s-cluster/)
-- [Monitoring with Prometheus, Loki, Grafana and Kubernetes. Part 2. SNMP](https://timeforplanb123.github.io/k8s-monitoring-part-two-snmp/)
-- [Monitoring with Prometheus, Loki, Grafana and Kubernetes. Part 3. Gitlab Agent](https://timeforplanb123.github.io/k8s-monitoring-part-three-gitlab-agent/)
+## All pages
 
-In this part, I wanted to write about the [SNMP Exporter](https://github.com/prometheus/snmp_exporter){:target="_blank"}, but I decided that it was time to think about automating changes in the cluster. Therefore, here I will connect the Kubernetes cluster to Gitlab using the Gitlab Agent. The result will be the ability to manage the cluster using the Gitlab pipeline. All this in the "How to" format .
+| Name                                        | Summary                                               |
+| ------------------------------------------- | ----------------------------------------------------- |
+| [Monitoring with Prometheus, Loki, Grafana and Kubernetes. Part 1. Kubernetes cluster][kubernetes-part1-post] | Here is about basic configuration of Kubernetes monitoring cluster |
+| [Monitoring with Prometheus, Loki, Grafana and Kubernetes. Part 2. SNMP][kubernetes-part2-post] | Here is about SNMP O_O |
+| [Monitoring with Prometheus, Loki, Grafana and Kubernetes. Part 3. Gitlab Agent][kubernetes-part3-post] | How to connect a Kubernetes cluster to Gitlab |
+
+[kubernetes-part1-post]: {{ "" | relative_url }}{% post_url 2023-02-19-k8s-monitoring-part-one-k8s-cluster %}
+[kubernetes-part2-post]: {{ "" | relative_url }}{% post_url 2023-02-25-k8s-monitoring-part-two-snmp %}
+[kubernetes-part3-post]: {{ "" | relative_url }}{% post_url 2023-05-08-k8s-monitoring-part-three-gitlab-agent %}
+
+
+In this part, I wanted to write about the [SNMP Exporter](https://github.com/prometheus/snmp_exporter){:target="_blank"}, but I decided, that it's time to think about automating changes in the cluster. Therefore, here I will connect the Kubernetes cluster to Gitlab using the Gitlab Agent. The result will be the ability to manage the cluster using the Gitlab pipeline. All this in the "How to" format .
 
 Now I have a Kubernetes cluster, deployed on a Desktop machine (see Kubernetes manifests from [Part 1](https://timeforplanb123.github.io/k8s-monitoring-part-one-k8s-cluster/){:target="_blank"}. This is a development environment. This is where I constantly make changes and apply them manually using `kubectl apply`. Automating changes, using Gitlab + Gitlab Agent, in the development cluster is redundant, so I will create a virtual machine on Ubuntu Server 22.04 and deploy a Production Kubernetes cluster on it, which I will connect to Gitlab. I will use a non-public network and self-hosted services.
 
@@ -22,16 +34,17 @@ So, I build the local environment on the Production machine (new machine on Ubun
 - copy Kubernetes manifests from Desktop to Production, apply them with `kubectl apply` command
 
 Besides the new Production cluster, I need Gitlab and DNS. I already have a Gitlab 14.8 [Omnibus installation](https://docs.gitlab.com/omnibus/){:target="_blank"}, deployed on a separate machine, which is available at `http://gitlab.my.domain`. In Gitlab I created a k8s repository and added Kubernetes manifests from [Part 1](https://timeforplanb123.github.io/k8s-monitoring-part-one-k8s-cluster/){:target="_blank"} to it.
-
-![]({{ site.url }}{{ site.baseurl }}/assets/img/posts/kubernetes_monitoring/gitlab_agent/k8s_repo_manifests_only.png)
-
+<figure>
+    <a href="{{ site.baseurl }}/assets/images/kubernetes_monitoring/gitlab_agent/k8s_repo_manifests_only.png"><img src="{{ site.baseurl }}/assets/images/kubernetes_monitoring/gitlab_agent/k8s_repo_manifests_only.png"></a>
+</figure>
 k8s - directory with manifests (grafana, loki, prometheus contain corresponding manifests):
-
-![]({{ site.url }}{{ site.baseurl }}/assets/img/posts/kubernetes_monitoring/gitlab_agent/k8s_repo_k8s_dir.png)
-
+<figure>
+    <a href="{{ site.baseurl }}/assets/images/kubernetes_monitoring/gitlab_agent/k8s_repo_k8s_dir.png"><img src="{{ site.baseurl }}/assets/images/kubernetes_monitoring/gitlab_agent/k8s_repo_k8s_dir.png"></a>
+</figure>
 ingress - directory with Ingress file:
-
-![]({{ site.url }}{{ site.baseurl }}/assets/img/posts/kubernetes_monitoring/gitlab_agent/k8s_repo_ingress_dir.png)
+<figure>
+    <a href="{{ site.baseurl }}/assets/images/kubernetes_monitoring/gitlab_agent/k8s_repo_ingress_dir.png"><img src="{{ site.baseurl }}/assets/images/kubernetes_monitoring/gitlab_agent/k8s_repo_ingress_dir.png"></a>
+</figure>
 
 
 ## Kubernetes and Gitlab integration
@@ -69,18 +82,20 @@ I create my own certificate authority(CA). This is the directory with the self-s
 ```text
 mkdir ~/ca && cd ~/ca
 
-# create a private key, certificate signing request and a public key (self-signed CA certificate) with one command 
+# create a private key, certificate signing request 
+# and a public key (self-signed CA certificate) with one command 
 openssl req -newkey rsa:2048 -nodes -keyout ca.key -x509 -days 3654 -out ca.crt
 ```
 
 I sign the certificate signing request (.csr file) received earlier. From a certain version, Kubernetes considers the Common Name (CN) field as legacy and asks to use SAN (subjectAltName), so I add this field (SAN) to the certificate:
 
 ```text
-openssl x509 -req -extfile <(printf "subjectAltName=DNS:gitlab.my.domain") -in ~/certs/gitlab.my.domain.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out gitlab.my.domain.crt -days 365
+openssl x509 -req -extfile <(printf "subjectAltName=DNS:gitlab.my.domain") \
+-in ~/certs/gitlab.my.domain.csr -CA ca.crt -CAkey ca.key -CAcreateserial \
+-out gitlab.my.domain.crt -days 365
 ```
 
 `3654` and `365` - lifetime of certificates. Here as an example. It is logical that CA has a larger number. And now I have a certificate for Gitlab + Gitlab KAS - `gitlab.my.domain.crt`.
-
 
 ### Gitlab + https
 
@@ -148,15 +163,15 @@ docker run --rm -it -v /srv/gitlab-runner/config:/etc/gitlab-runner gitlab/gitla
 ```
 
 Now the new Runner will appear in the Gitlab web UI, the status should be `online`.
-
-![]({{ site.url }}{{ site.baseurl }}/assets/img/posts/kubernetes_monitoring/gitlab_agent/gitlab_runner_online.png)
-
+<figure>
+    <a href="{{ site.baseurl }}/assets/images/kubernetes_monitoring/gitlab_agent/gitlab_runner_online.png"><img src="{{ site.baseurl }}/assets/images/kubernetes_monitoring/gitlab_agent/gitlab_runner_online.png"></a>
+</figure>
 
 ## Kubernetes Agent Server and Kubernetes Agent
 
 ### Kubernetes Agent Server (KAS)
 
-At first, enable Kubernetes Agent Server on Gitlab server ([Docs for Omnibus installation](https://docs.gitlab.com/ee/administration/clusters/kas.html#for-omnibus){:target="_blank"}:
+At first, enable Kubernetes Agent Server on Gitlab server ([Docs for Omnibus installation](https://docs.gitlab.com/ee/administration/clusters/kas.html#for-omnibus){:target="_blank"}):
 
 ```text
 sudo vi /etc/gitlab/gitlab.rb
@@ -178,11 +193,10 @@ sudo gitlab-ctl reconfigure
 And now it's time to install the Gitlab Agent to my Kubernetes Production cluster. [Here is link from docs](https://docs.gitlab.com/ee/user/clusters/agent/install/){:target="_blank"} step by step:
 
 - Create an agent configuration file `.gitlab/agents/k8s/config.yaml` in default branch `k8s` Gitlab repository with Gitlab UI
-
-![]({{ site.url }}{{ site.baseurl }}/assets/img/posts/kubernetes_monitoring/gitlab_agent/k8s_repo_with_gitlab_agent.png)
-
-![]({{ site.url }}{{ site.baseurl }}/assets/img/posts/kubernetes_monitoring/gitlab_agent/gitlab_agent_config.png)
-
+<figure>
+    <a href="{{ site.baseurl }}/assets/images/kubernetes_monitoring/gitlab_agent/k8s_repo_with_gitlab_agent.png"><img src="{{ site.baseurl }}/assets/images/kubernetes_monitoring/gitlab_agent/k8s_repo_with_gitlab_agent.png"></a>
+    <a href="{{ site.baseurl }}/assets/images/kubernetes_monitoring/gitlab_agent/gitlab_agent_config.png"><img src="{{ site.baseurl }}/assets/images/kubernetes_monitoring/gitlab_agent/gitlab_agent_config.png"></a>
+</figure>
 - Authorize the agent to access your projects (if the project is the only one - this is optional, see [docs](https://docs.gitlab.com/ee/user/clusters/agent/ci_cd_workflow.html#authorize-the-agent){:target="_blank"}) with `.gitlab/agents/k8s/config.yaml` file:
 
     ```text
@@ -193,7 +207,12 @@ And now it's time to install the Gitlab Agent to my Kubernetes Production cluste
     ```
 - Register the agent with GitLab UI. Select `k8s Gitlab project > Infrastructure > Kubernetes clusters > Actions > Connect with Agent > Select an Agent (k8s agent) > Register Agent` and copy the command under "Recommended installation method". For my Gitlab 14.8 it looks like:
     ```text
-    docker run --pull=always --rm     registry.gitlab.com/gitlab-org/cluster-integration/gitlab-agent/cli:stable generate     --agent-token=my_token --kas-address=wss://gitlab.my.domain//-/kubernetes-agent     --agent-version stable     --namespace gitlab-kubernetes-agent
+    docker run --pull=always --rm \
+    registry.gitlab.com/gitlab-org/cluster-integration/gitlab-agent/cli:stable generate \
+    --agent-token=my_token \
+    --kas-address=wss://gitlab.my.domain//-/kubernetes-agent \
+    --agent-version stable \
+    --namespace gitlab-kubernetes-agent
     ```
 
 But, before installing gitlab-agent in the Production cluster with this command, I need to add `ca.crt` to the list of trusted certificates. This [issue](https://gitlab.com/gitlab-org/gitlab/-/issues/280518){:target="_blank"} describes how this can be done. I'll just repeat on a machine with a Production Kubernetes cluster:
@@ -203,7 +222,12 @@ But, before installing gitlab-agent in the Production cluster with this command,
 kubectl create secret generic 'ca' --namespace gitlab-kubernetes-agent --from-file="~/crt.ca"
 
 # save kas configuration to kas.yaml
-docker run --pull=always --rm     registry.gitlab.com/gitlab-org/cluster-integration/gitlab-agent/cli:stable generate     --agent-token=my_token --kas-address=wss://gitlab.my.domain//-/kubernetes-agent     --agent-version stable     --namespace gitlab-kubernetes-agent > kas.yaml
+docker run --pull=always --rm \
+registry.gitlab.com/gitlab-org/cluster-integration/gitlab-agent/cli:stable generate \
+--agent-token=my_token \
+--kas-address=wss://gitlab.my.domain//-/kubernetes-agent \
+--agent-version stable \
+--namespace gitlab-kubernetes-agent > kas.yaml
 
 # open kas.yaml with vi
 vi kas.yaml
@@ -224,7 +248,8 @@ volumes:
   secret:
     secretName: ca
 
-# mount new custom-certs volume to /certs directory in spec:template:spec:contaiers:volumeMounts section 
+# mount new custom-certs volume to /certs directory 
+# in spec:template:spec:contaiers:volumeMounts section 
 volumeMounts:
 - name: custom-certs
   readOnly: true
@@ -238,16 +263,17 @@ kubectl apply -f kas.yaml
 ```
 
 Now the agent status in Gitlab UI (`k8s project > Infrastructure > Kubernetes clusters`) will change to `Connected`.
-
-![]({{ site.url }}{{ site.baseurl }}/assets/img/posts/kubernetes_monitoring/gitlab_agent/gitlab_agent_status.png)
+<figure>
+    <a href="{{ site.baseurl }}/assets/images/kubernetes_monitoring/gitlab_agent/gitlab_agent_status.png"><img src="{{ site.baseurl }}/assets/images/kubernetes_monitoring/gitlab_agent/gitlab_agent_status.png"></a>
+</figure>
 
 
 ## Gitlab pipeline
 
 Now my `k8s` repository contains Kubernetes manifests and authorization file for Gitlab Agent. I will add new `.gitlab-ci.yml` file in k8s repo with Gitlab UI.
-
-![]({{ site.url }}{{ site.baseurl }}/assets/img/posts/kubernetes_monitoring/gitlab_agent/k8s_repo.png)
-
+<figure>
+    <a href="{{ site.baseurl }}/assets/images/kubernetes_monitoring/gitlab_agent/k8s_repo.png"><img src="{{ site.baseurl }}/assets/images/kubernetes_monitoring/gitlab_agent/k8s_repo.png"></a>
+</figure>
 `.gitlab-ci.yml` here is a simple 3 stage pipeline file (validate, deploy, report) just for example and testing the work Gitlab Agent with Kubernetes cluster:
 
 ```yaml
@@ -317,7 +343,9 @@ About this pipeline:
 
 Now, if I update the Kubernetes manifests in the Development environment and push changes to Gitlab, the Gitlab pipeline will update the Production Kubernetes cluster
 
-![]({{ site.url }}{{ site.baseurl }}/assets/img/posts/kubernetes_monitoring/gitlab_agent/pipeline.png)
+<figure>
+    <a href="{{ site.baseurl }}/assets/images/kubernetes_monitoring/gitlab_agent/pipeline.png"><img src="{{ site.baseurl }}/assets/images/kubernetes_monitoring/gitlab_agent/pipeline.png"></a>
+</figure>
 
 
 ## Troubleshooting

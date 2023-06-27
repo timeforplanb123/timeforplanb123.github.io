@@ -1,13 +1,26 @@
 ---
-layout: post
-title: Elastic stack. Part 1 
-summary: Overview of the Elastic stack.
-featured-img:
-categories: Linux Networking
-tags: [ elastic, notes, linux ]
+title: Elastic stack. Part 1. Overview
+excerpt: "Overview of the Elastic stack."
+categories:
+  - elastic
+tags:
+  - elasticsearch
+  - logstash
+  - kibana
+  - beats
+toc: true
+toc_label: "Getting Started"
 ---
-- [Elastic stack. Part 1](https://timeforplanb123.github.io/elastic-stack-part-one/)
-- [Elastic stack. Part 2](https://timeforplanb123.github.io/elastic-stack-part-two/)
+## All pages
+
+| Name                                        | Summary                                               |
+| ------------------------------------------- | ----------------------------------------------------- |
+| [Elastic stack. Part 1. Overview][elastic-part1-post] | Overview of the Elastic stack |
+| [Elastic stack. Part 2. Simple Elasticsearch cluster][elastic-part2-post] | Let's build a simple Elasticsearch cluster from scratch |
+
+[elastic-part1-post]: {{ "" | relative_url }}{% post_url 2021-12-29-elastic-stack-part-one %}
+[elastic-part2-post]: {{ "" | relative_url }}{% post_url 2021-12-29-elastic-stack-part-two %}
+
 
 ## Overview of the Elastic Stack
 
@@ -35,6 +48,7 @@ The interaction between the components looks like this:
 
 Elasticsearch can receive data directly, without Logstash or Beats. This function is performed by the Elasticsearch Ingest node. But, if there is a lot of data, data formats are different, then processing with Logstash or Beats is needed. With the any modules you can receive, filter and output different data formats.
 
+
 ## Sharding and Scalability
 
 The index is where documents are stored in Elasticsearch.
@@ -53,6 +67,7 @@ So, speaking of sharding:
 - indices are usually created automatically. See [here](https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-index_.html#index-creation){:target="_blank"}
 
 Good explanation of sharding is [here](https://stackoverflow.com/questions/15694724/shards-and-replicas-in-elasticsearch){:target="_blank"}
+
 
 ## Understanding replication
 
@@ -75,6 +90,7 @@ Elasticsearch chooses the route to the primary and replica shards independently.
 By default, each new index creates a replica (one index = one shard with + one replica shard). It's actually for Elasticsearch 7.x
 
 [Good article about Elasticsearch Replication](https://codingexplained.com/coding/elasticsearch/understanding-replication-in-elasticsearch){:target="_blank"}
+
 
 ## Elasticsearch cluster. Overview of node roles
 
@@ -120,8 +136,10 @@ By default, the node from a Elasticsearch cluster, has a data + ingest + master 
 
 [Documentation](https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-node.html){:target="_blank"}
 
+
 ## Elasticsearch cluster example
 
 Let's build such an Elasticsearch cluster and start it in the next part of this article
-
-![]({{ site.url }}{{ site.baseurl }}/assets/img/posts/elastic_stack/elastic_cluster.png)
+<figure>
+    <a href="{{ site.baseurl }}/assets/images/elastic_stack/elastic_cluster.png"><img src="{{ site.baseurl }}/assets/images/elastic_stack/elastic_cluster.png"></a>
+</figure>

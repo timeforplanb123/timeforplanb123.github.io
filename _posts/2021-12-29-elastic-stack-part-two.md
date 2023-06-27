@@ -1,19 +1,30 @@
 ---
-layout: post
-title: Elastic stack. Part 2
-summary: Let's build a simple Elasticsearch cluster from scratch.
-featured-img:
-categories: Linux Networking
-tags: [ elastic, notes, linux ]
+title: Elastic stack. Part 2. Simple Elasticsearch cluster
+excerpt: "Let's build a simple Elasticsearch cluster from scratch."
+categories:
+  - elastic
+tags:
+  - elasticsearch
+toc: true
+toc_label: "Getting Started"
 ---
-- [Elastic stack. Part 1](https://timeforplanb123.github.io/elastic-stack-part-one/)
-- [Elastic stack. Part 2](https://timeforplanb123.github.io/elastic-stack-part-two/)
+## All pages
+
+| Name                                        | Summary                                               |
+| ------------------------------------------- | ----------------------------------------------------- |
+| [Elastic stack. Part 1. Overview][elastic-part1-post] | Overview of the Elastic stack |
+| [Elastic stack. Part 2. Simple Elasticsearch cluster][elastic-part2-post] | Let's build a simple Elasticsearch cluster from scratch |
+
+[elastic-part1-post]: {{ "" | relative_url }}{% post_url 2021-12-29-elastic-stack-part-one %}
+[elastic-part2-post]: {{ "" | relative_url }}{% post_url 2021-12-29-elastic-stack-part-two %}
+
 
 ## Basic Installation
 
 We have 3 data centers, each with 2 virtual machines on CentOS. The first machine will be Elasticsearch `data` + `master` node, second - Elasticsearch `coordinator` node + `Logstash`. And we will install and configure `Kibana` on one of the machines with Elasticsearch `coordinator` node. Yes, without redundancy and any http load balancer. Let's take a look at the diagram and our cluster design for this article:
-
-![]({{ site.url }}{{ site.baseurl }}/assets/img/posts/elastic_stack/elastic_cluster.png)
+<figure>
+    <a href="{{ site.baseurl }}/assets/images/elastic_stack/elastic_cluster.png"><img src="{{ site.baseurl }}/assets/images/elastic_stack/elastic_cluster.png"></a>
+</figure>
 
 Here we use the minimum hardware requirements for the machines from the [documentation](https://www.elastic.co/guide/en/cloud-enterprise/current/ece-prereqs.html){:target="_blank"}, except for disks. In our case, `data` nodes has 2 disks with 100 + 500Gb, and `coordinator` nodes has 2 disks with 50 + 50Gb.
 
@@ -141,8 +152,9 @@ hostnamectl set-hostname elk-coordinator-dc1
 Of course, Elasticsearch cluster design is an individual thing. The node roles and their number, routing allocation settings and search request routing settings depend on the service architecture.
 
 Let's take a look at the general data storage scheme, in our case:
-
-![]({{ site.url }}{{ site.baseurl }}/assets/img/posts/elastic_stack/elastic_data.png)
+<figure>
+    <a href="{{ site.baseurl }}/assets/images/elastic_stack/elastic_data.png"><img src="{{ site.baseurl }}/assets/images/elastic_stack/elastic_data.png"></a>
+</figure>
 
 Depending on the shard allocation routing settings, the master node will suggest the coordinator node, on which data nodes to store data. By default, for version 7.x, 3 data nodes and 1 data index:
 - 1 primary shard, 2 replica shards
@@ -150,8 +162,9 @@ Depending on the shard allocation routing settings, the master node will suggest
 - see details in [Part 1](https://timeforplanb123.github.io/elastic-stack-part-one){:target="_blank"}
 
 Ok, it was about data writing, now let's talk about user search requests:
-
-![]({{ site.url }}{{ site.baseurl }}/assets/img/posts/elastic_stack/elastic_search_requests.png)
+<figure>
+    <a href="{{ site.baseurl }}/assets/images/elastic_stack/elastic_search_requests.png"><img src="{{ site.baseurl }}/assets/images/elastic_stack/elastic_search_requests.png"></a>
+</figure>
 
 The coordinator node collects information from different data nodes depending on the search shard routing settings (by default, the round-robin mechanism is used) and then transmits it to the client.
 

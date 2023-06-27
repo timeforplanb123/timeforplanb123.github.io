@@ -1,18 +1,26 @@
 ---
-layout: post
-title: Stupid legacy CI/CD 
-summary: Why not to take the concept of "Network as Code (NaC)" and CI/CD for legacy network. Yes, it looks more like a fun or an initially bad idea. Let it be like this. But maybe the result and changing of the usual, routine approach to network management will have a positive impact and motivate you/your CLI lovers :)
-featured-img:
-categories: Linux Code Networking
-tags: [ code, python, notes ]
+title: Stupid legacy CI/CD
+classes: wide
+excerpt: "Why not to take the concept of 'Network as Code (NaC)' and CI/CD for legacy network."
+categories:
+  - code
+tags:
+  - python
+  - gitlab
+  - network
+toc: true
+toc_label: "Getting Started"
 ---
-To implement **CI/CD** your devices must be able to use **CI/CD**.
+## Introduction
+
+To implement **CI/CD** your devices must be able to use **CI/CD**. 
 As instance, the config delivery can be using the `config replace` method or the available netconf actions (`edit-config`, `copy-config`, `commit`) that perform `replace/merge/remove` for both the entire configuration and part of it in the datastore(`candidate`, `running`). Such `netconf capabilities` as `validate` and `rollback-on-error` will help to validate the configuration. This is an important part of **CI/CD** process.
 
 And what if your devies are super legacy, and they can't do any of the above? The only option here is to devide the configuration into pieces(`snmp`, `aaa`, `ntp`, etc.) and create a single management scenario/script/tool to manage it. Although, the correct answer is not to suffer from bullshit, **CI/CD** is not for you... ;d
 
 Although we are talking about legacy network devices, changing the usual approach to network management is good in any case. You can't always click buttons in the CLI (or you can?) or accumulate an infinite scripts. You need a unified approach to network management. 
 Why not to take the concept of **"Network as Code (NaC)"** and **CI/CD** as the basis for this. Yes, for the legacy network. Yes, it sounds like a joke or an initially bad idea. Well, well, so be it! But maybe the result and changing of the usual, routine approach to network management will have a positive impact and motivate you/your CLI lovers :)
+
 
 ## Let's start
 
@@ -22,7 +30,6 @@ I have a testing stand with huawei devices at hand, and it will be easier for me
 
 
 We will use **source-control** (`git`), **source of truth** ([NetBox](https://github.com/netbox-community/netbox){:target="_blank"}), **CI/CD** ([Gitlab](https://gitlab.com/gitlab-org/gitlab){:target="_blank"}), **coding** (`python3.8+` + [Nornir framework](https://github.com/nornir-automation/nornir){:target="_blank"}), **testing** ([pytest](https://github.com/pytest-dev/pytest){:target="_blank"}), **templates** ([jinja2](https://github.com/pallets/jinja){:target="_blank"}). But, at first, we will talk about data types. It's a way to abstract our text configuration files. We will represent the text config pieces as **YAML** data. Let's immediately look at an [example](https://github.com/timeforplanb123/StupidLegacyCI/blob/main/region-1/dc-3/common.yaml){:target="_blank"} of an **YAML** (it's `common.yaml` file in git repository - `./dc-3/common.yaml`) file describing **SNMP** configuration for a group of devices that refer to a common DC(`dc-3` in example) or location and have common device role (`access` in example) in network design:
-
 
 ```yaml
 filter: "F(device_role__name__contains='access') & F(data__site__name__contains='dc-3')"
@@ -54,7 +61,6 @@ configs:
         config_commands: "cmd_configure_snmp.py"
 ```
 
-
 Let's take in order:
 
 - `filter` - **Nornir** filter for group of devices. This filter is used only for groups.
@@ -62,6 +68,7 @@ Let's take in order:
 - `snmp` - parameters describing `snmp` config for group of devices. `params` and `commands` in this section describes the `snmp` settings. `params` can be changed and should be changed. This is our control mechanism. `commands` describe 3 possible actions: changing parameter (`compare_script`, `no_commands` and `yes_commands`), deleting `snmp` configuration (`delete_commands`), and config (`config_commands`). Both commands list and scripts can be used as `commands`. Next we'll see how it works.
 
 We can describe `ntp`, `syslog` or `aaa` configuration in `configs`, of course. It's template.
+
 
 ## Git repository and Source of Truth
 
@@ -134,7 +141,6 @@ Each directory has a `common.yaml` file, by changing the parameters of which, we
 The repository structure should change along with the NetBox structure (sometimes we add new sites and devices, at least). But I would not like to complicate everything with the task of synchronization, but I would like to limit myself to a small script that will create or update the content of the repository. This, of course, is an individual thing, but I give an example ([structure.py](https://github.com/timeforplanb123/StupidLegacyCI/blob/main/structure.py){:target="_blank"}) for the directory tree above:
 
 ```python
-
 import os
 import re
 import pynetbox
@@ -174,7 +180,6 @@ if __name__ == "__main__":
         # change the your_device_platform
         platform="your_device_platform",
     )
-
 ```
 
 
@@ -185,7 +190,6 @@ if __name__ == "__main__":
 It's time to think about how we can organize the versioning of configurations and pipeline delivery. At the very beginning, we said that we have a legacy network, and we can't build a pipeline using netconf. By the way, it could look like this (with the support of the corresponding netconf capabilities): `lock candidate datastore` > `netconf edit config action to candidate datastore` > `validate/rollback-on-error (for tests pipeline stage)` > `commit` > `unlock candidate datastore`. In this case, we could form the configuration only based on the last commit, and it would really be similar to NaC. We will have to look at the `git diff` between the last two commits, take our YAMLs from it, pass them to the handler, which will compare the parameters and make the necessary configuration. We will write a simple handler in python. And we will describe other things with a pipeline:
 
 ```yaml
-
 stages:
     - update_cache
     - compare_commits
@@ -267,6 +271,7 @@ Let's analyze it by stages:
 - `tests`. The only source of truth and up-to-date configuration for us is our YAMLs. If some of them have changed, then it probably have to first check how these YAML's of the previous commit correspond to the current state of the network. If something does not match, we consider the tests not passed, and we stop the pipeline on this and bring the network to the desired state. You can always run the tests again
 - `run`. If the tests are successful, then we pass the control to the python handler, which will form a configuration for the desired block of parameters or execute the required set of commands or script. We will run this stage manually, so we have more control. Let's look at the handler, it is located in the file `stupid_ci.py`
 
+
 ## YAML Handler
 
 What should the handler be like? The handler should perform the network transition from one state to another painlessly. Hmm, well, as much as it is possible in our conditions, because our network initially can't do this. What do we mean by the transition from one state to another? This are:
@@ -320,19 +325,23 @@ undo snmp-agent target-host trap address udp-domain 10.1.2.3 params securityname
 
 The `deploy` method apply the resulting configuration to the device/device group defined by the `filter`.
 
+
 ## What else about YAML Handler
 
 We put the `login/password` for connecting to devices in the system variables. For Gitlab - `Settings`, `CI/CD`, `Variables`. Create `DC_USERNAME` and `DC_PASSWORD`.
 Also, this is true for save commands - apply `SAVE` system variable or change `SAVE` global variable in `stupid_ci.py`
 
+
 ## config.yaml
 
 We use [nornir_netbox plugin](https://github.com/wvandeun/nornir_netbox){:target="_blank"} as an Inventory for Nornir, so we store all the parameters in `config.yaml`. You nedd to add your connection parameters to `config.yaml` in git repo root directory.
+
 
 ## Example of script
 
 To configure snmp from scratch, we use the script [`cmd_configure_snmp.py`](https://github.com/timeforplanb123/StupidLegacyCI/blob/main/cmd_configure_snmp.py){:target="_blank"}. This is Nornir script. The function is `cli` always and `ctx` parameter is an Nornir object.
 Why to use a script? For example, if some parameters are unique for each device from the group, and we can't describe them in YAML as general. Yes, you can describe it for each device separately, but this is too much...
+
 
 ## Tests
 
@@ -385,8 +394,9 @@ FAILED test_snmp.py::test_snmp[device_dict2-device_3-cur_dict2]
 ================== 3 failed, 1 warning in 26.71s (0:00:26) ==================
 ```
 Our pipeline with failed tests:
-
-![]({{ site.url }}{{ site.baseurl }}/assets/img/posts/stupid_legacy_ci/pipeline.png)
+<figure>
+    <a href="{{ site.baseurl }}/assets/images/stupid_legacy_ci/pipeline.png"><img src="{{ site.baseurl }}/assets/images/stupid_legacy_ci/pipeline.png"></a>
+</figure>
 
 The `deploy` stage is started strictly manually, after the all tests have passed.
 
@@ -397,7 +407,6 @@ What do we need to, for example, add an ntp configuration to our pipeline:
  - add parameters to YAML by analogy with snmp:
 
 ```yaml
-
 filter: "F(device_role__name__contains='access') & F(data__site__name__contains='dc-3')"
 
 configs:
@@ -441,7 +450,6 @@ configs:
         delete_commands: ["undo ntp-service unicast-server {}"]
         # deploy commands (List with commands or path to task)
         config_commands: ["ntp-service unicast-server {}"]
-
 ```
  - write a test by analogy with `test_snmp.py`. This is a template.
 

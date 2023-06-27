@@ -1,14 +1,28 @@
 ---
-layout: post
-title: Monitoring with Prometheus, Loki, Grafana and Kubernetes. Part 1 
-summary: Here is about basic configuration of Kubernetes monitoring cluster.
-featured-img:
-categories: Linux Monitoring Kubernetes 
-tags: [ grafana, prometheus, loki, kubernetes, notes, linux ]
+title: Monitoring with Prometheus, Loki, Grafana and Kubernetes. Part 1. Kubernetes cluster
+excerpt: "Here is about basic configuration of Kubernetes monitoring cluster."
+categories:
+  - kubernetes
+tags:
+  - kubernetes
+  - grafana
+  - prometheus
+  - loki
+toc: true
+toc_label: "Getting Started"
 ---
-- [Monitoring with Prometheus, Loki, Grafana and Kubernetes. Part 1. Kubernetes cluster](https://timeforplanb123.github.io/k8s-monitoring-part-one-k8s-cluster/)
-- [Monitoring with Prometheus, Loki, Grafana and Kubernetes. Part 2. SNMP](https://timeforplanb123.github.io/k8s-monitoring-part-two-snmp/)
-- [Monitoring with Prometheus, Loki, Grafana and Kubernetes. Part 3. Gitlab Agent](https://timeforplanb123.github.io/k8s-monitoring-part-three-gitlab-agent/)
+## All pages
+
+| Name                                        | Summary                                               |
+| ------------------------------------------- | ----------------------------------------------------- |
+| [Monitoring with Prometheus, Loki, Grafana and Kubernetes. Part 1. Kubernetes cluster][kubernetes-part1-post] | Here is about basic configuration of Kubernetes monitoring cluster |
+| [Monitoring with Prometheus, Loki, Grafana and Kubernetes. Part 2. SNMP][kubernetes-part2-post] | Here is about SNMP O_O |
+| [Monitoring with Prometheus, Loki, Grafana and Kubernetes. Part 3. Gitlab Agent][kubernetes-part3-post] | How to connect a Kubernetes cluster to Gitlab |
+
+[kubernetes-part1-post]: {{ "" | relative_url }}{% post_url 2023-02-19-k8s-monitoring-part-one-k8s-cluster %}
+[kubernetes-part2-post]: {{ "" | relative_url }}{% post_url 2023-02-25-k8s-monitoring-part-two-snmp %}
+[kubernetes-part3-post]: {{ "" | relative_url }}{% post_url 2023-05-08-k8s-monitoring-part-three-gitlab-agent %}
+
 
 There is no specific purpose here, it is about service monitoring inside and outside the Kubernetes cluster. And in this part about basic configuration of Kubernetes monitoring cluster.
 
@@ -16,11 +30,13 @@ There is no specific purpose here, it is about service monitoring inside and out
 ## Kubernetes cluster
 
 Kubernetes is a solution for creating a development, testing and production environment. I will build a kubernetes cluster on a desktop and use a minikube to create a Node. I'll call it the development environment.
-
-![]({{ site.url }}{{ site.baseurl }}/assets/img/posts/kubernetes_monitoring/kubernetes_monitoring_cluster.png)
+<figure>
+    <a href="{{ site.baseurl }}/assets/images/kubernetes_monitoring/kubernetes_monitoring_cluster.png"><img src="{{ site.baseurl }}/assets/images/kubernetes_monitoring/kubernetes_monitoring_cluster.png"></a>
+</figure>
 
 
 ## Why kubernetes?
+
 Why Kubernetes? Container scaling? Yes, but for my simple cluster, it's the convenience of configuration management and automation of updates.
 
 
@@ -31,6 +47,8 @@ All configuration files can be taken from the [repository](){:target="_blank"}.
 Before creating Kubernetes objects for each image, you need to decide which data should be stored regardless of the Pod state. For Prometheus, there are `prometheus.yml`, `prometheus_rules.yml` configuration files and prometheus [TSDB](https://prometheus.io/docs/prometheus/latest/storage/){:target="_blank"}. For Grafana, there are `prometheus.yaml`, `loki.yaml` grafana datasources configuration files and grafana storage with `grafana.db` database (sqlite3 by default), `alerting, plugins, csv, file-collections, png` directories. For Loki, there are `loki.yaml`, `loki_rules.yml` loki configuration files and loki [storage](https://grafana.com/docs/loki/latest/operations/storage/){:target="_blank"}.
 
 For configuration files in kubernetes there is a [ConfigMap](https://kubernetes.io/docs/concepts/configuration/configmap/){:target="_blank"}, for databases - [Persistent Volumes](https://kubernetes.io/docs/concepts/storage/persistent-volumes/){:target="_blank"}
+
+I will describe resources using classic [Kubernetes](https://kubernetes.io/){:target="_blank"} manifests. I'm not gonna use [Helm](https://helm.sh/){:target="_blank"} charts and [Kubernetes Operators](https://kubernetes.io/docs/concepts/extend-kubernetes/operator/#operators-in-kubernetes){:target="_blank"} (for example, [prometheus-operator](https://github.com/prometheus-operator/prometheus-operator){:target="_blank"}) this time.
 
 
 ## ConfigMap
@@ -111,7 +129,8 @@ data:
           store: inmemory
       enable_api: true
 
-    # see 'Grafana dashboard shows "too many outstanding requests" after upgrade to v2.4.2' issue
+    # see 'Grafana dashboard shows "too many outstanding requests" 
+    # after upgrade to v2.4.2' issue
     # https://github.com/grafana/loki/issues/5123
     # and from docs:
     # https://grafana.com/docs/loki/latest/configuration/#querier
@@ -203,7 +222,8 @@ metadata:
   # use in template of Deployment object
   name: prometheus-persistent-volume-claim
 spec:
-  # see Access Modes - https://kubernetes.io/docs/concepts/storage/persistent-volumes/#access-modes
+  # see Access Modes - 
+  # https://kubernetes.io/docs/concepts/storage/persistent-volumes/#access-modes
   # 1Gi is just for testing in a small desktop cluster
   accessModes:
     - ReadWriteOnce

@@ -1,14 +1,26 @@
 ---
-layout: post
-title: Monitoring with Prometheus, Loki, Grafana and Kubernetes. Part 2
-summary: Here is about SNMP O_O 
-featured-img:
-categories: Linux Monitoring Kubernetes 
-tags: [ grafana, prometheus, loki, kubernetes, notes, linux ]
+title: Monitoring with Prometheus, Loki, Grafana and Kubernetes. Part 2. SNMP
+excerpt: "Here is about SNMP O_O"
+categories:
+  - kubernetes
+tags:
+  - kubernetes
+  - snmp
+toc: true
+toc_label: "Getting Started"
 ---
-- [Monitoring with Prometheus, Loki, Grafana and Kubernetes. Part 1. Kubernetes cluster](https://timeforplanb123.github.io/k8s-monitoring-part-one-k8s-cluster/)
-- [Monitoring with Prometheus, Loki, Grafana and Kubernetes. Part 2. SNMP](https://timeforplanb123.github.io/k8s-monitoring-part-two-snmp/)
-- [Monitoring with Prometheus, Loki, Grafana and Kubernetes. Part 3. Gitlab Agent](https://timeforplanb123.github.io/k8s-monitoring-part-three-gitlab-agent/)
+## All pages
+
+| Name                                        | Summary                                               |
+| ------------------------------------------- | ----------------------------------------------------- |
+| [Monitoring with Prometheus, Loki, Grafana and Kubernetes. Part 1. Kubernetes cluster][kubernetes-part1-post] | Here is about basic configuration of Kubernetes monitoring cluster |
+| [Monitoring with Prometheus, Loki, Grafana and Kubernetes. Part 2. SNMP][kubernetes-part2-post] | Here is about SNMP O_O |
+| [Monitoring with Prometheus, Loki, Grafana and Kubernetes. Part 3. Gitlab Agent][kubernetes-part3-post] | How to connect a Kubernetes cluster to Gitlab |
+
+[kubernetes-part1-post]: {{ "" | relative_url }}{% post_url 2023-02-19-k8s-monitoring-part-one-k8s-cluster %}
+[kubernetes-part2-post]: {{ "" | relative_url }}{% post_url 2023-02-25-k8s-monitoring-part-two-snmp %}
+[kubernetes-part3-post]: {{ "" | relative_url }}{% post_url 2023-05-08-k8s-monitoring-part-three-gitlab-agent %}
+
 
 SNMP in 2023? 
 There is nothing more permanent than temporary. Originally conceived as a temporary protocol, SNMP firmly settled in the world of network devices. Yes, in 2023, SNMP has not lost its relevance. Before talking about Prometheus SNMP Exporter and Prometheus SNMP Config Generator, I would like to write a simple note on how to search SNMP OIDs.
@@ -37,7 +49,6 @@ sudo apt install snmp
 **3.** Find any MIB browser. Ireasoning is ok, there are app for all platforms - [https://www.easysnmp.com/tools/snmp-browsers/](https://www.easysnmp.com/tools/snmp-browsers){:target="_blank"}
 MIB browser will provide a convenient search through the MIB trees.
 
-
 ### How to search
 
 **1.** Find the MIB for interested network device:
@@ -61,7 +72,10 @@ HUAWEI-MIB DEFINITIONS ::= BEGIN
 **expand some MIB tree:**
 
 ```text
-~/.snmp/mibs$ snmptranslate -M ./:/usr/share/snmp/mibs/ietf:/usr/share/snmp/mibs/iana -Ln -Tp HUAWEI-MIB::hwDatacomm.42.2.1.16.1.2
+~/.snmp/mibs$ snmptranslate \
+-M ./:/usr/share/snmp/mibs/ietf:/usr/share/snmp/mibs/iana \
+-Ln -Tp HUAWEI-MIB::hwDatacomm.42.2.1.16.1.2
+
 +--hwDatacomm(25)
    |
    +--hwBRASMib(40)
@@ -70,7 +84,10 @@ HUAWEI-MIB DEFINITIONS ::= BEGIN
 or by the OID name:
 
 ```text
-~/.snmp/mibs$ snmptranslate -M ./:/usr/share/snmp/mibs/ietf:/usr/share/snmp/mibs/iana -Ln -Tp HUAWEI-MIB:hwDatacomm
+~/.snmp/mibs$ snmptranslate \
+-M ./:/usr/share/snmp/mibs/ietf:/usr/share/snmp/mibs/iana \
+-Ln -Tp HUAWEI-MIB:hwDatacomm
+
 +--hwDatacomm(25)
    |
    +--hwBRASMib(40)
@@ -79,7 +96,10 @@ or by the OID name:
 **search some OIDs:**
 
 ```text
-~/.snmp/mibs$ snmptranslate -M ./:/usr/share/snmp/mibs/ietf:/usr/share/snmp/mibs/iana -Ln -Td HUAWEI-MIB::hwDatacomm.42.2.1.16.1.2
+~/.snmp/mibs$ snmptranslate \
+-M ./:/usr/share/snmp/mibs/ietf:/usr/share/snmp/mibs/iana \
+-Ln -Td HUAWEI-MIB::hwDatacomm.42.2.1.16.1.2
+
 HUAWEI-MIB::hwDatacomm.42.2.1.16.1.2
 hwDatacomm OBJECT-TYPE
   -- FROM   HUAWEI-MIB
@@ -87,7 +107,10 @@ hwDatacomm OBJECT-TYPE
 ```
 
 ```text
-~/.snmp/mibs$ snmptranslate -M ./:/usr/share/snmp/mibs/ietf:/usr/share/snmp/mibs/iana -Ln -Td HUAWEI-MIB:hwVlan
+~/.snmp/mibs$ snmptranslate \
+-M ./:/usr/share/snmp/mibs/ietf:/usr/share/snmp/mibs/iana \
+-Ln -Td HUAWEI-MIB:hwVlan
+
 HUAWEI-MIB::hwVlan
 hwVlan OBJECT-TYPE
   -- FROM   HUAWEI-MIB
@@ -95,19 +118,28 @@ hwVlan OBJECT-TYPE
 ```
 
 ```text
-~/.snmp/mibs$ snmptranslate -M ./:/usr/share/snmp/mibs/ietf:/usr/share/snmp/mibs/iana -Ln -On HUAWEI-MIB:hwVlan
+~/.snmp/mibs$ snmptranslate \
+-M ./:/usr/share/snmp/mibs/ietf:/usr/share/snmp/mibs/iana \
+-Ln -On HUAWEI-MIB:hwVlan
+
 .1.3.6.1.4.1.2011.5.6
 ```
 
 ```text
-~/.snmp/mibs$ snmptranslate -M ./:/usr/share/snmp/mibs/ietf:/usr/share/snmp/mibs/iana -Ln -Of HUAWEI-MIB:hwVlan
+~/.snmp/mibs$ snmptranslate \
+-M ./:/usr/share/snmp/mibs/ietf:/usr/share/snmp/mibs/iana \
+-Ln -Of HUAWEI-MIB:hwVlan
+
 .iso.org.dod.internet.private.enterprises.huawei.huaweiMgmt.hwVlan
 ```
 
 **search MIB by OID:**
 
 ```text
-~/.snmp/mibs$ snmptranslate -M ./:/usr/share/snmp/mibs/ietf:/usr/share/snmp/mibs/iana -Ln -OS 1.3.6.1.4.1.2011.5.25.31.1.1.1.1.5
+~/.snmp/mibs$ snmptranslate \
+-M ./:/usr/share/snmp/mibs/ietf:/usr/share/snmp/mibs/iana \
+-Ln -OS 1.3.6.1.4.1.2011.5.25.31.1.1.1.1.5
+
 HUAWEI-MIB::hwDatacomm.31.1.1.1.1.5
 ```
 
@@ -130,8 +162,12 @@ snmptranslate -M ./ -m ALL -Ts -Ln | grep OID
 I downloaded HUAWEI-ENTITY-EXTENT-MIB for this example - `~/.snmp/mibs$ curl http://www.circitor.fr/Mibs/Mib/H/HUAWEI-ENTITY-EXTENT-MIB.mib > HUAWEI-ENTITY-EXTENT-MIB.mib`.
 
 ```text
-# the value of the `-M` option should be the directory with HUAWEI-ENTITY-EXTENT-MIB (./) and with all imported MIB (/usr/share/snmp/mibs/ietf:/usr/share/snmp/mibs/iana)
-~/.snmp/mibs$ snmptranslate -M ./:/usr/share/snmp/mibs/ietf:/usr/share/snmp/mibs/iana -m HUAWEI-ENTITY-EXTENT-MIB -TB hwEntityMem
+# the value of the `-M` option should be the directory with HUAWEI-ENTITY-EXTENT-MIB (./) 
+# and with all imported MIB (/usr/share/snmp/mibs/ietf:/usr/share/snmp/mibs/iana)
+~/.snmp/mibs$ snmptranslate \
+-M ./:/usr/share/snmp/mibs/ietf:/usr/share/snmp/mibs/iana \
+-m HUAWEI-ENTITY-EXTENT-MIB -TB hwEntityMem
+
 HUAWEI-ENTITY-EXTENT-MIB::hwEntityMemUsed
 HUAWEI-ENTITY-EXTENT-MIB::hwEntityMemoryAvgUsage
 HUAWEI-ENTITY-EXTENT-MIB::hwEntityMemoryType
@@ -142,7 +178,10 @@ HUAWEI-ENTITY-EXTENT-MIB::hwEntityMemUsage
 ```
 
 ```text
-~/.snmp/mibs$ snmptranslate -M ./:/usr/share/snmp/mibs/ietf:/usr/share/snmp/mibs/iana -m HUAWEI-ENTITY-EXTENT-MIB -TB hwEntityMem*
+~/.snmp/mibs$ snmptranslate \
+-M ./:/usr/share/snmp/mibs/ietf:/usr/share/snmp/mibs/iana \
+-m HUAWEI-ENTITY-EXTENT-MIB -TB hwEntityMem*
+
 HUAWEI-ENTITY-EXTENT-MIB::hwEntityMemUsed
 HUAWEI-ENTITY-EXTENT-MIB::hwEntityMemoryAvgUsage
 HUAWEI-ENTITY-EXTENT-MIB::hwEntityMemoryType
@@ -153,7 +192,10 @@ HUAWEI-ENTITY-EXTENT-MIB::hwEntityMemUsage
 ```
 
 ```text
-~/.snmp/mibs$ snmptranslate -M ./:/usr/share/snmp/mibs/ietf:/usr/share/snmp/mibs/iana -m HUAWEI-ENTITY-EXTENT-MIB -On -TB hwEntityMem*
+~/.snmp/mibs$ snmptranslate \
+-M ./:/usr/share/snmp/mibs/ietf:/usr/share/snmp/mibs/iana \
+-m HUAWEI-ENTITY-EXTENT-MIB -On -TB hwEntityMem*
+
 .1.3.6.1.4.1.2011.5.25.31.1.1.1.1.37
 .1.3.6.1.4.1.2011.5.25.31.1.1.1.1.36
 .1.3.6.1.4.1.2011.5.25.31.1.1.1.1.31
@@ -166,7 +208,11 @@ HUAWEI-ENTITY-EXTENT-MIB::hwEntityMemUsage
 And the same things, but in detail from MIB (`d` option):
 
 ```text
-~/.snmp/mibs$ snmptranslate -M ./:/usr/share/snmp/mibs/ietf:/usr/share/snmp/mibs/iana -m HUAWEI-ENTITY-EXTENT-MIB -On -TBd hwEntityMem*.1.3.6.1.4.1.2011.5.25.31.1.1.1.1.37
+~/.snmp/mibs$ snmptranslate \
+-M ./:/usr/share/snmp/mibs/ietf:/usr/share/snmp/mibs/iana \
+-m HUAWEI-ENTITY-EXTENT-MIB \
+-On -TBd hwEntityMem*.1.3.6.1.4.1.2011.5.25.31.1.1.1.1.37
+
 hwEntityMemUsed OBJECT-TYPE
   -- FROM	HUAWEI-ENTITY-EXTENT-MIB
   SYNTAX	Unsigned32
@@ -195,6 +241,7 @@ Using HUAWEI-MIB, I'll check some OIDs on test huawei switch (I have `HUAWEI-MIB
 
 ```text
 ~/.snmp/mibs$ snmpwalk -v2c -c public -Ln -On 192.168.0.3 hwAaa
+
 .1.3.6.1.4.1.2011.5.2.1.1.1.1.6.114.97.100.105.117.115 = STRING: "radius"
 .1.3.6.1.4.1.2011.5.2.1.1.1.1.7.100.101.102.97.117.108.116 = STRING: "default"
 .1.3.6.1.4.1.2011.5.2.1.1.1.2.6.114.97.100.105.117.115 = INTEGER: 3
@@ -204,6 +251,7 @@ Using HUAWEI-MIB, I'll check some OIDs on test huawei switch (I have `HUAWEI-MIB
 
 ```text
 ~/.snmp/mibs$ snmpwalk -v2c -c public -Ln -On 192.168.0.3 hwDhcpRelayMib
+
 .1.3.6.1.4.1.2011.5.7.1.1.3.0 = INTEGER: 1
 .1.3.6.1.4.1.2011.5.7.1.1.4.0 = INTEGER: 0
 .1.3.6.1.4.1.2011.5.7.1.1.5.0 = INTEGER: 0
@@ -212,6 +260,7 @@ Using HUAWEI-MIB, I'll check some OIDs on test huawei switch (I have `HUAWEI-MIB
 
 ```text
 ~/.snmp/mibs$ snmpwalk -v2c -c public -Ln -Of 192.168.0.3 hwDhcpRelayMib
+
 .iso.org.dod.internet.private.enterprises.huawei.huaweiMgmt.hwDhcp.hwDHCPRelayMib.1.3.0 = INTEGER: 1
 .iso.org.dod.internet.private.enterprises.huawei.huaweiMgmt.hwDhcp.hwDHCPRelayMib.1.4.0 = INTEGER: 0
 .iso.org.dod.internet.private.enterprises.huawei.huaweiMgmt.hwDhcp.hwDHCPRelayMib.1.5.0 = INTEGER: 0
@@ -219,32 +268,44 @@ Using HUAWEI-MIB, I'll check some OIDs on test huawei switch (I have `HUAWEI-MIB
 ```
 
 ```text
-~/.snmp/mibs$ snmpget -v2c -c public -Ln -On 192.168.0.3 .1.3.6.1.4.1.2011.5.7.1.1.3.0
+~/.snmp/mibs$ snmpget -v2c -c public \
+-Ln -On 192.168.0.3 .1.3.6.1.4.1.2011.5.7.1.1.3.0
+
 .1.3.6.1.4.1.2011.5.7.1.1.3.0 = INTEGER: 1
 ```
 
 ```text
-~/.snmp/mibs$ snmpget -v2c -c public -Ln -Of 192.168.0.3 .1.3.6.1.4.1.2011.5.7.1.1.3.0
+~/.snmp/mibs$ snmpget -v2c -c public \
+-Ln -Of 192.168.0.3 .1.3.6.1.4.1.2011.5.7.1.1.3.0
+
 .iso.org.dod.internet.private.enterprises.huawei.huaweiMgmt.hwDhcp.hwDHCPRelayMib.1.3.0 = INTEGER: 1
 ```
 
 ```text
-~/.snmp/mibs$ snmpwalk -v2c -c public 192.168.0.3 HUAWEI-MIB::hwDatacomm.42.2.1.16.1.3.0
+~/.snmp/mibs$ snmpwalk -v2c -c public \
+192.168.0.3 HUAWEI-MIB::hwDatacomm.42.2.1.16.1.3.0
+
 HUAWEI-MIB::hwDatacomm.42.2.1.16.1.3.0 = INTEGER: 16384
 ```
 
 ```text
-~/.snmp/mibs$ snmpget -v2c -c public 192.168.0.3 HUAWEI-MIB::hwDatacomm.42.2.1.16.1.3.0
+~/.snmp/mibs$ snmpget -v2c -c public \
+192.168.0.3 HUAWEI-MIB::hwDatacomm.42.2.1.16.1.3.0
+
 HUAWEI-MIB::hwDatacomm.42.2.1.16.1.3.0 = INTEGER: 16384
 ```
 
 ```text
-~/.snmp/mibs$ snmpget -v2c -c public -On 192.168.0.3 HUAWEI-MIB::hwDatacomm.42.2.1.16.1.3.0
+~/.snmp/mibs$ snmpget -v2c -c public \
+-On 192.168.0.3 HUAWEI-MIB::hwDatacomm.42.2.1.16.1.3.0
+
 .1.3.6.1.4.1.2011.5.25.42.2.1.16.1.3.0 = INTEGER: 16384
 ```
 
 ```text
-~/.snmp/mibs$ snmpget -v2c -c public 192.168.0.3 .1.3.6.1.4.1.2011.5.25.42.2.1.16.1.3.0
+~/.snmp/mibs$ snmpget -v2c -c public \
+192.168.0.3 .1.3.6.1.4.1.2011.5.25.42.2.1.16.1.3.0
+
 HUAWEI-MIB::hwDatacomm.42.2.1.16.1.3.0 = INTEGER: 16384
 ```
 

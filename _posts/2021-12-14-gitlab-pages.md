@@ -1,10 +1,10 @@
 ---
-layout: post
-title: An easy way to create internal documentation pages 
-summary: This is GitLab. Yes, it's that simple.
-featured-img:
-categories: Linux Code Networking
-tags: [ code, notes ]
+title: An easy way to create internal documentation pages
+categories:
+  - gitlab
+tags:
+  - gitlab
+  - docs
 ---
 This is [GitLab](https://about.gitlab.com/install/){:target="_blank"}. Yes, it's that simple.
 If you have a local `DNS server` and `gitlab-ce`, then you can create a place to store documentation in, hmm..., a few minutes.
@@ -18,6 +18,7 @@ vi /etc/gitlab/gitlab.rb
 pages_external_url "http://your.gitlab.domain_name/"
 gitlab_pages['internal_gitlab_server'] = "http://your.gitlab.domain_name"
 gitlab_pages['enable'] = true
+
 # enable control user's membership per project/repository
 gitlab_pages['access_control'] = true
 ```
@@ -38,6 +39,7 @@ Now you need to add the `A` entries to your DNS server:
 ```text
 # such a record should already be
 your.gitlab.domain_name 1800 IN A    192.168.2.1
+
 # and this is a new record
 *.your.gitlab.domain_name 1800 IN A    192.168.2.1
 ```
