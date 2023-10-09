@@ -42,62 +42,62 @@ SNMP exporter is supplied with a [default configuration](https://github.com/prom
 1. Configuring SNMP on network devices
 I have 2 network devices that I will use as an example, Mikrotik Router and old Huawei 23 series switch with configured `10.1.1.254` and `10.1.1.1` ip addresses respectively. On each device, I configured `SNMPv2c` with a `public` community. Usually it is not difficult to find an example of an SNMP configuration for a specific network device, so I will not give an example for my network devices.
 2. Preparing manifests for snmp exporter
-  ```yaml
-  # k8s/snmp-exporter/snmp-exporter-deployment.yaml
-  apiVersion: apps/v1
-  kind: Deployment
-  metadata:
-    name: snmp-exporter-deployment
-  spec:
-    replicas: 1
-    selector:
-      matchLabels:
-        component: snmp-exporter 
-    template:
-      metadata:
-        labels:
+    ```yaml
+    # k8s/snmp-exporter/snmp-exporter-deployment.yaml
+    apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      name: snmp-exporter-deployment
+    spec:
+      replicas: 1
+      selector:
+        matchLabels:
           component: snmp-exporter 
-      spec:
-        volumes:
-          - name: snmp-exporter-config-volume
-            configMap:
-              name: snmp-exporter-config
-        containers:
-          - name: snmp-exporter 
-            image: prom/snmp-exporter
-            ports:
-              - containerPort: 9116
-            volumeMounts:
-              - name: snmp-exporter-config-volume
-                mountPath: /etc/snmp_exporter/
-  ```
-
-  ```yaml
-  # k8s/snmp-exporter/snmp-exporter-cluster-ip-service.yaml
-  apiVersion: v1
-  kind: Service
-  metadata:
-    name: snmp-exporter-cluster-ip-service
-  spec:
-    type: ClusterIP
-    selector:
-      component: snmp-exporter 
-    ports:
-      - port: 9116
-        targetPort: 9116
-  ```
-
-  ```yaml
-  # k8s/snmp-exporter/snmp-exporter-config-map.yaml
-  apiVersion: v1
-  kind: ConfigMap
-  metadata:
-    name: snmp-exporter-config
-  data:
-    snmp.yml: |-
-      # here is the contents of snmp.yml file
-      # https://github.com/prometheus/snmp_exporter/blob/main/snmp.yml
-  ```
+      template:
+        metadata:
+          labels:
+            component: snmp-exporter 
+        spec:
+          volumes:
+            - name: snmp-exporter-config-volume
+              configMap:
+                name: snmp-exporter-config
+          containers:
+            - name: snmp-exporter 
+              image: prom/snmp-exporter
+              ports:
+                - containerPort: 9116
+              volumeMounts:
+                - name: snmp-exporter-config-volume
+                  mountPath: /etc/snmp_exporter/
+    ```
+  
+    ```yaml
+    # k8s/snmp-exporter/snmp-exporter-cluster-ip-service.yaml
+    apiVersion: v1
+    kind: Service
+    metadata:
+      name: snmp-exporter-cluster-ip-service
+    spec:
+      type: ClusterIP
+      selector:
+        component: snmp-exporter 
+      ports:
+        - port: 9116
+          targetPort: 9116
+    ```
+  
+    ```yaml
+    # k8s/snmp-exporter/snmp-exporter-config-map.yaml
+    apiVersion: v1
+    kind: ConfigMap
+    metadata:
+      name: snmp-exporter-config
+    data:
+      snmp.yml: |-
+        # here is the contents of snmp.yml file
+        # https://github.com/prometheus/snmp_exporter/blob/main/snmp.yml
+    ```
 3. Configuring Prometheus
 I'll add new jobs to the Prometheus ConfigMap:
 ```yaml
