@@ -71,6 +71,7 @@ spec:
             - name: snmp-exporter-config-volume
               mountPath: /etc/snmp_exporter/
 ```
+
 ```yaml
 # k8s/snmp-exporter/snmp-exporter-cluster-ip-service.yaml
 apiVersion: v1
@@ -85,6 +86,7 @@ spec:
     - port: 9116
       targetPort: 9116
 ```
+
 ```yaml
 # k8s/snmp-exporter/snmp-exporter-config-map.yaml
 apiVersion: v1
@@ -397,6 +399,7 @@ spec:
             - name: mktxp-exporter-config-volume
               mountPath: /home/mktxp/mktxp/
 ```
+
 ```yaml
 # k8s/mktxp-exporter/mktxp-exporter-cluster-ip-service.yaml
 apiVersion: v1
@@ -411,6 +414,7 @@ spec:
     - port: 49090
       targetPort: 49090
 ```
+
 ```yaml
 # k8s/mktxp-exporter/mktxp-exporter-config-map.yaml
 apiVersion: v1
