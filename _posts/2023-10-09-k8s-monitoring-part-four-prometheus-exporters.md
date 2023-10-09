@@ -100,64 +100,64 @@ I have 2 network devices that I will use as an example, Mikrotik Router and old 
     ```
 3. Configuring Prometheus
 I'll add new jobs to the Prometheus ConfigMap:
-```yaml
-# k8s/prometheus/prometheus-config-map.yaml
-apiVersion: v1
-# type of object 
-kind: ConfigMap
-metadata:
-  # ConfigMap name
-  # used in the Deployment object template
-  name: prometheus-config
-data:
-  # there are no scrape targets and alerting rules
-  prometheus.yml: |-
-    global:
-      scrape_interval: 15s
-      evaluation_interval: 15s
-    rule_files:
-      - /etc/prometheus/prometheus_rules.yml
-    scrape_configs:
-      - job_name: 'snmp-exporter'
-        # https://prometheus.io/docs/prometheus/latest/configuration/configuration/#scrape_config
-        scrape_interval: 2m
-        scrape_timeout: 1m 
-        static_configs:
-          - targets:
-            # huawei switch
-            - '10.1.1.1'
-            # mikrotik router
-            - '10.1.1.254'
-        metrics_path: '/snmp'
-        params:
-          module: ['if_mib']
-        relabel_configs:
-          - source_labels: ['__address__']
-            target_label: '__param_target'
-          - source_labels: ['__param_target']
-            target_label: 'instance'
-          - target_label: '__address__'
-            replacement: 'snmp-exporter-cluster-ip-service.default.svc.cluster.local:9116'
-      - job_name: 'snmp-exporter-mikrotik'
-        # https://prometheus.io/docs/prometheus/latest/configuration/configuration/#scrape_config
-        scrape_interval: 1m
-        scrape_timeout: 30s
-        static_configs:
-          - targets:
-            # mikrotik router
-            - '10.1.1.254'
-        metrics_path: '/snmp'
-        params:
-          module: ['mikrotik']
-        relabel_configs:
-          - source_labels: ['__address__']
-            target_label: '__param_target'
-          - source_labels: ['__param_target']
-            target_label: 'instance'
-          - target_label: '__address__'
-            replacement: 'snmp-exporter-cluster-ip-service.default.svc.cluster.local:9116'
-  prometheus_rules.yml: |-
-```
+    ```yaml
+    # k8s/prometheus/prometheus-config-map.yaml
+    apiVersion: v1
+    # type of object 
+    kind: ConfigMap
+    metadata:
+      # ConfigMap name
+      # used in the Deployment object template
+      name: prometheus-config
+    data:
+      # there are no scrape targets and alerting rules
+      prometheus.yml: |-
+        global:
+          scrape_interval: 15s
+          evaluation_interval: 15s
+        rule_files:
+          - /etc/prometheus/prometheus_rules.yml
+        scrape_configs:
+          - job_name: 'snmp-exporter'
+            # https://prometheus.io/docs/prometheus/latest/configuration/configuration/#scrape_config
+            scrape_interval: 2m
+            scrape_timeout: 1m 
+            static_configs:
+              - targets:
+                # huawei switch
+                - '10.1.1.1'
+                # mikrotik router
+                - '10.1.1.254'
+            metrics_path: '/snmp'
+            params:
+              module: ['if_mib']
+            relabel_configs:
+              - source_labels: ['__address__']
+                target_label: '__param_target'
+              - source_labels: ['__param_target']
+                target_label: 'instance'
+              - target_label: '__address__'
+                replacement: 'snmp-exporter-cluster-ip-service.default.svc.cluster.local:9116'
+          - job_name: 'snmp-exporter-mikrotik'
+            # https://prometheus.io/docs/prometheus/latest/configuration/configuration/#scrape_config
+            scrape_interval: 1m
+            scrape_timeout: 30s
+            static_configs:
+              - targets:
+                # mikrotik router
+                - '10.1.1.254'
+            metrics_path: '/snmp'
+            params:
+              module: ['mikrotik']
+            relabel_configs:
+              - source_labels: ['__address__']
+                target_label: '__param_target'
+              - source_labels: ['__param_target']
+                target_label: 'instance'
+              - target_label: '__address__'
+                replacement: 'snmp-exporter-cluster-ip-service.default.svc.cluster.local:9116'
+      prometheus_rules.yml: |-
+    ```
 
 Pipeline from [Part 3](https://timeforplanb123.github.io/kubernetes/k8s-monitoring-part-three-gitlab-agent/#gitlab-pipeline){:target="_blank"} is used to update the monitoring cluster, so you need to `push` new configuration files to the repository. To update Prometheus ConfigMap, you need to manually apply a `rollout restart` for `prometheus-deployment` object after the pipeline completes its work:
 ```bash
@@ -188,82 +188,82 @@ Preparing of the `generator.yml` file:
 ```
 4. Prepare the host to work with SNMP and find OIDs or SNMP object names. For example, `sysDescr`, `sysName`, `sysLocation`, `1.3.6.1.4.1.2011.5.25.31.1.1.1.1.5`, `1.3.6.1.4.1.2011.5.25.31.1.1.1.1.7`, `1.3.6.1.4.1.2011.5.25.31.1.1.1.1.11`. The process is described in [Part 2](https://timeforplanb123.github.io/kubernetes/k8s-monitoring-part-two-snmp/#how-to-search-snmp-oids-for-monitoring){:target="_blank"}. 
 5. Add the found OID or SNMP object names to the `generator.yml` file according to the [instructions](https://github.com/prometheus/snmp_exporter/tree/main/generator#file-format){:target="_blank"}. You will have the following file:
-```yaml
-auths:
-  auth_name:
-    version: 2
-    community: public
-modules:
-# Default IF-MIB interfaces table with ifIndex.
-  if_mib:
-    walk: [sysUpTime, interfaces, ifXTable]
-    lookups:
-      - source_indexes: [ifIndex]
-        lookup: ifPhysAddress
-      - source_indexes: [ifIndex]
-        lookup: ifAlias
-      - source_indexes: [ifIndex]
-        # Uis OID to avoid conflict with PaloAlto PAN-COMMON-MIB.
-        lookup: 1.3.6.1.2.1.2.2.1.2 # ifDescr
-      - source_indexes: [ifIndex]
-        # Use OID to avoid conflict with Netscaler NS-ROOT-MIB.
-        lookup: 1.3.6.1.2.1.31.1.1.1.1 # ifName
-    overrides:
-      ifPhysAddress:
-        # type: DisplayString
-        ignore: true # Lookup metric
-      ifAlias:
-        ignore: true # Lookup metric
-      ifDescr:
-        ignore: true # Lookup metric
-      ifName:
-        ignore: true # Lookup metric
-      ifType:
-        type: EnumAsInfo
-
-# Mikrotik Router
-# http://download2.mikrotik.com/Mikrotik.mib
-  mikrotik:
-    walk:
-      - interfaces
-      - ifMIB
-      - laIndex
-      - sysUpTime
-      - sysDescr
-      - host
-      - mikrotik
-    lookups:
-      - source_indexes: [ifIndex]
-        lookup: ifName
-      - source_indexes: [mtxrInterfaceStatsIndex]
-        lookup: ifName
-      - source_indexes: [hrStorageIndex]
-        lookup: hrStorageDescr
-      - source_indexes: [laIndex]
-        lookup: laNames
-        drop_source_indexes: true
-    overrides:
-      ifName:
-        ignore: true # Lookup metric
-      ifType:
-        type: EnumAsInfo
-
-# Huawei switch
-  huawei_sw:
-    walk: 
-      - sysDescr
-      # oid 1.3.6.1.2.1.1.1
-      - sysName
-      # oid 1.3.6.1.2.1.1.5
-      - sysLocation
-      # oid 1.3.6.1.2.1.1.6
-      - 1.3.6.1.4.1.2011.5.25.31.1.1.1.1.5
-      # hwEntityCpuUsage
-      - 1.3.6.1.4.1.2011.5.25.31.1.1.1.1.7
-      # hwEntityMemUsage
-      - 1.3.6.1.4.1.2011.5.25.31.1.1.1.1.11
-      # hwEntityTemperature
-```
+    ```yaml
+    auths:
+      auth_name:
+        version: 2
+        community: public
+    modules:
+    # Default IF-MIB interfaces table with ifIndex.
+      if_mib:
+        walk: [sysUpTime, interfaces, ifXTable]
+        lookups:
+          - source_indexes: [ifIndex]
+            lookup: ifPhysAddress
+          - source_indexes: [ifIndex]
+            lookup: ifAlias
+          - source_indexes: [ifIndex]
+            # Uis OID to avoid conflict with PaloAlto PAN-COMMON-MIB.
+            lookup: 1.3.6.1.2.1.2.2.1.2 # ifDescr
+          - source_indexes: [ifIndex]
+            # Use OID to avoid conflict with Netscaler NS-ROOT-MIB.
+            lookup: 1.3.6.1.2.1.31.1.1.1.1 # ifName
+        overrides:
+          ifPhysAddress:
+            # type: DisplayString
+            ignore: true # Lookup metric
+          ifAlias:
+            ignore: true # Lookup metric
+          ifDescr:
+            ignore: true # Lookup metric
+          ifName:
+            ignore: true # Lookup metric
+          ifType:
+            type: EnumAsInfo
+    
+    # Mikrotik Router
+    # http://download2.mikrotik.com/Mikrotik.mib
+      mikrotik:
+        walk:
+          - interfaces
+          - ifMIB
+          - laIndex
+          - sysUpTime
+          - sysDescr
+          - host
+          - mikrotik
+        lookups:
+          - source_indexes: [ifIndex]
+            lookup: ifName
+          - source_indexes: [mtxrInterfaceStatsIndex]
+            lookup: ifName
+          - source_indexes: [hrStorageIndex]
+            lookup: hrStorageDescr
+          - source_indexes: [laIndex]
+            lookup: laNames
+            drop_source_indexes: true
+        overrides:
+          ifName:
+            ignore: true # Lookup metric
+          ifType:
+            type: EnumAsInfo
+    
+    # Huawei switch
+      huawei_sw:
+        walk: 
+          - sysDescr
+          # oid 1.3.6.1.2.1.1.1
+          - sysName
+          # oid 1.3.6.1.2.1.1.5
+          - sysLocation
+          # oid 1.3.6.1.2.1.1.6
+          - 1.3.6.1.4.1.2011.5.25.31.1.1.1.1.5
+          # hwEntityCpuUsage
+          - 1.3.6.1.4.1.2011.5.25.31.1.1.1.1.7
+          # hwEntityMemUsage
+          - 1.3.6.1.4.1.2011.5.25.31.1.1.1.1.11
+          # hwEntityTemperature
+    ```
 
 Now, based on the prepared file, I generate `snmp.yml`. The easiest way is to [run the generator in docker](https://github.com/prometheus/snmp_exporter/tree/main/generator#docker-users){:target="_blank"}:
 ```bash
@@ -271,93 +271,93 @@ make docker-generate
 ```
 The generated configuration file for SNMP Exporter can be found in the generator root directory - `~/snmp_exporter/generator/snmp.yml`. Now, in order to make changes to the cluster, I need to update the configuration of SNMP Exporter and Prometheus:
 1. Update SNMP Exporter ConfigMap:
-```yaml
-# k8s/snmp-exporter/snmp-exporter-config-map.yaml
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: snmp-exporter-config
-data:
-  snmp.yml: |-
-    # here is the contents of the new snmp.yml file generated by the snmp generator
-```
+    ```yaml
+    # k8s/snmp-exporter/snmp-exporter-config-map.yaml
+    apiVersion: v1
+    kind: ConfigMap
+    metadata:
+      name: snmp-exporter-config
+    data:
+      snmp.yml: |-
+        # here is the contents of the new snmp.yml file generated by the snmp generator
+    ```
 2. Update Prometheus ConfigMap:
-```yaml
-# k8s/prometheus/prometheus-config-map.yaml
-apiVersion: v1
-# type of object 
-kind: ConfigMap
-metadata:
-  # ConfigMap name
-  # used in the Deployment object template
-  name: prometheus-config
-data:
-  # there are no scrape targets and alerting rules
-  prometheus.yml: |-
-    global:
-      scrape_interval: 15s
-      evaluation_interval: 15s
-    rule_files:
-      - /etc/prometheus/prometheus_rules.yml
-    scrape_configs:
-      - job_name: 'snmp-exporter-if-mib'
-        # https://prometheus.io/docs/prometheus/latest/configuration/configuration/#scrape_config
-        scrape_interval: 2m
-        scrape_timeout: 1m 
-        static_configs:
-          - targets:
-            # huawei switch
-            - '10.1.1.1'
-            # mikrotik router
-            - '10.1.1.254`
-        metrics_path: '/snmp'
-        params:
-          module: ['if_mib']
-        relabel_configs:
-          - source_labels: ['__address__']
-            target_label: '__param_target'
-          - source_labels: ['__param_target']
-            target_label: 'instance'
-          - target_label: '__address__'
-            replacement: 'snmp-exporter-cluster-ip-service.default.svc.cluster.local:9116'
-      - job_name: 'snmp-exporter-mikrotik-router'
-        # https://prometheus.io/docs/prometheus/latest/configuration/configuration/#scrape_config
-        scrape_interval: 1m
-        scrape_timeout: 30s
-        static_configs:
-          - targets:
-            # mikrotik router
-            - '10.1.1.254'
-        metrics_path: '/snmp'
-        params:
-          module: ['mikrotik']
-        relabel_configs:
-          - source_labels: ['__address__']
-            target_label: '__param_target'
-          - source_labels: ['__param_target']
-            target_label: 'instance'
-          - target_label: '__address__'
-            replacement: 'snmp-exporter-cluster-ip-service.default.svc.cluster.local:9116'
-      - job_name: 'snmp-exporter-huawei-switch'
-        # https://prometheus.io/docs/prometheus/latest/configuration/configuration/#scrape_config
-        scrape_interval: 1m
-        scrape_timeout: 30s
-        static_configs:
-          - targets:
-            # huawei switch
-            - '10.1.1.1'
-        metrics_path: '/snmp'
-        params:
-          module: ['huawei_sw']
-        relabel_configs:
-          - source_labels: ['__address__']
-            target_label: '__param_target'
-          - source_labels: ['__param_target']
-            target_label: 'instance'
-          - target_label: '__address__'
-            replacement: 'snmp-exporter-cluster-ip-service.default.svc.cluster.local:9116'
-  prometheus_rules.yml: |-
-```
+    ```yaml
+    # k8s/prometheus/prometheus-config-map.yaml
+    apiVersion: v1
+    # type of object 
+    kind: ConfigMap
+    metadata:
+      # ConfigMap name
+      # used in the Deployment object template
+      name: prometheus-config
+    data:
+      # there are no scrape targets and alerting rules
+      prometheus.yml: |-
+        global:
+          scrape_interval: 15s
+          evaluation_interval: 15s
+        rule_files:
+          - /etc/prometheus/prometheus_rules.yml
+        scrape_configs:
+          - job_name: 'snmp-exporter-if-mib'
+            # https://prometheus.io/docs/prometheus/latest/configuration/configuration/#scrape_config
+            scrape_interval: 2m
+            scrape_timeout: 1m 
+            static_configs:
+              - targets:
+                # huawei switch
+                - '10.1.1.1'
+                # mikrotik router
+                - '10.1.1.254`
+            metrics_path: '/snmp'
+            params:
+              module: ['if_mib']
+            relabel_configs:
+              - source_labels: ['__address__']
+                target_label: '__param_target'
+              - source_labels: ['__param_target']
+                target_label: 'instance'
+              - target_label: '__address__'
+                replacement: 'snmp-exporter-cluster-ip-service.default.svc.cluster.local:9116'
+          - job_name: 'snmp-exporter-mikrotik-router'
+            # https://prometheus.io/docs/prometheus/latest/configuration/configuration/#scrape_config
+            scrape_interval: 1m
+            scrape_timeout: 30s
+            static_configs:
+              - targets:
+                # mikrotik router
+                - '10.1.1.254'
+            metrics_path: '/snmp'
+            params:
+              module: ['mikrotik']
+            relabel_configs:
+              - source_labels: ['__address__']
+                target_label: '__param_target'
+              - source_labels: ['__param_target']
+                target_label: 'instance'
+              - target_label: '__address__'
+                replacement: 'snmp-exporter-cluster-ip-service.default.svc.cluster.local:9116'
+          - job_name: 'snmp-exporter-huawei-switch'
+            # https://prometheus.io/docs/prometheus/latest/configuration/configuration/#scrape_config
+            scrape_interval: 1m
+            scrape_timeout: 30s
+            static_configs:
+              - targets:
+                # huawei switch
+                - '10.1.1.1'
+            metrics_path: '/snmp'
+            params:
+              module: ['huawei_sw']
+            relabel_configs:
+              - source_labels: ['__address__']
+                target_label: '__param_target'
+              - source_labels: ['__param_target']
+                target_label: 'instance'
+              - target_label: '__address__'
+                replacement: 'snmp-exporter-cluster-ip-service.default.svc.cluster.local:9116'
+      prometheus_rules.yml: |-
+    ```
 3. `push` new configuration files to the repository. Wait until pipeline from [Part 3](https://timeforplanb123.github.io/kubernetes/k8s-monitoring-part-three-gitlab-agent/#gitlab-pipeline){:target="_blank"} updates ConfigMap objects in the cluster. After that, in order for SNMP Exporter and Prometheus to reload the configuration, I need to manually apply a `rollout restart` for the corresponding `deployment` objects:
 ```bash
 # prometheus rollout restart
@@ -608,135 +608,135 @@ Now, open Mikrotik terminal and configure new user (see [docs](https://github.co
 
 [Node Exporter](https://github.com/prometheus/node_exporter){:target="_blank"} collects Hardware and OS metrics. For example, I will install Node Exporter on an Ubuntu machine with the `192.168.0.10` ip address, located outside the k8s cluster:
 1. Download latest Node Exporter release (check it out [here](https://github.com/prometheus/node_exporter/releases){:target="_blank"}):
-```bash
-wget https://github.com/prometheus/node_exporter/releases/download/v1.6.1/node_exporter-1.6.1.linux-amd64.tar.gz
-tar xvfz node_exporter-1.6.1.linux-amd64.tar.gz
-```
+    ```bash
+    wget https://github.com/prometheus/node_exporter/releases/download/v1.6.1/node_exporter-1.6.1.linux-amd64.tar.gz
+    tar xvfz node_exporter-1.6.1.linux-amd64.tar.gz
+    ```
 2. Create systemd `node_exporter.service` file:
-```bash
-vi /etc/systemd/system/node_exporter.service
-```
+    ```bash
+    vi /etc/systemd/system/node_exporter.service
+    ```
 3. Add the following contents to the file:
-```bash
-[Unit]
-Description=Node Exporter
-After=network.target
-
-[Service]
-User=root
-Group=root
-Type=simple
-ExecStart=/home/user/node_exporter-1.6.1.linux-amd64/node_exporter
-
-[Install]
-WantedBy=multi-user.target
-```
+    ```bash
+    [Unit]
+    Description=Node Exporter
+    After=network.target
+    
+    [Service]
+    User=root
+    Group=root
+    Type=simple
+    ExecStart=/home/user/node_exporter-1.6.1.linux-amd64/node_exporter
+    
+    [Install]
+    WantedBy=multi-user.target
+    ```
 4. Run the node_exporter and add it to the startup:
-```bash
-systemctl start node_exporter
-systemctl enable node_exporter
-```
+    ```bash
+    systemctl start node_exporter
+    systemctl enable node_exporter
+    ```
 5. Check the node_exporter status:
-```bash
-systemctl status node_exporter
-```
+    ```bash
+    systemctl status node_exporter
+    ```
 
 To collect metrics from an installed Node Exporter using Prometheus, I need:
 1. Update Prometheus ConfigMap:
-```yaml
-# k8s/prometheus/prometheus-config-map.yaml
-apiVersion: v1
-# type of object 
-kind: ConfigMap
-metadata:
-  # ConfigMap name
-  # used in the Deployment object template
-  name: prometheus-config
-data:
-  # there are no scrape targets and alerting rules
-  prometheus.yml: |-
-    global:
-      scrape_interval: 15s
-      evaluation_interval: 15s
-    rule_files:
-      - /etc/prometheus/prometheus_rules.yml
-    scrape_configs:
-      - job_name: 'snmp-exporter-if-mib'
-        # https://prometheus.io/docs/prometheus/latest/configuration/configuration/#scrape_config
-        scrape_interval: 2m
-        scrape_timeout: 1m 
-        static_configs:
-          - targets:
-            # huawei switch
-            - '10.1.1.1'
-            # mikrotik router
-            - '10.1.1.254`
-        metrics_path: '/snmp'
-        params:
-          module: ['if_mib']
-        relabel_configs:
-          - source_labels: ['__address__']
-            target_label: '__param_target'
-          - source_labels: ['__param_target']
-            target_label: 'instance'
-          - target_label: '__address__'
-            replacement: 'snmp-exporter-cluster-ip-service.default.svc.cluster.local:9116'
-      - job_name: 'snmp-exporter-mikrotik-router'
-        # https://prometheus.io/docs/prometheus/latest/configuration/configuration/#scrape_config
-        scrape_interval: 1m
-        scrape_timeout: 30s
-        static_configs:
-          - targets:
-            # mikrotik router
-            - '10.1.1.254'
-        metrics_path: '/snmp'
-        params:
-          module: ['mikrotik']
-        relabel_configs:
-          - source_labels: ['__address__']
-            target_label: '__param_target'
-          - source_labels: ['__param_target']
-            target_label: 'instance'
-          - target_label: '__address__'
-            replacement: 'snmp-exporter-cluster-ip-service.default.svc.cluster.local:9116'
-      - job_name: 'snmp-exporter-huawei-switch'
-        # https://prometheus.io/docs/prometheus/latest/configuration/configuration/#scrape_config
-        scrape_interval: 1m
-        scrape_timeout: 30s
-        static_configs:
-          - targets:
-            # huawei switch
-            - '10.1.1.1'
-        metrics_path: '/snmp'
-        params:
-          module: ['huawei_sw']
-        relabel_configs:
-          - source_labels: ['__address__']
-            target_label: '__param_target'
-          - source_labels: ['__param_target']
-            target_label: 'instance'
-          - target_label: '__address__'
-            replacement: 'snmp-exporter-cluster-ip-service.default.svc.cluster.local:9116'
-      - job_name: 'mktxp-exporter-mikrotik-router'
-        scrape_interval: 3m
-        scrape_timeout: 30s
-        static_configs:
-          - targets:
-            - 'mktxp-exporter-cluster-ip-service.default.svc.cluster.local:49090'
-      - job_name: 'node-exporter'
-        static_configs:
-          # Ubuntu machine with node_exporter
-          - targets: ['192.168.0.10:9100']
-  prometheus_rules.yml: |-
-```
+    ```yaml
+    # k8s/prometheus/prometheus-config-map.yaml
+    apiVersion: v1
+    # type of object 
+    kind: ConfigMap
+    metadata:
+      # ConfigMap name
+      # used in the Deployment object template
+      name: prometheus-config
+    data:
+      # there are no scrape targets and alerting rules
+      prometheus.yml: |-
+        global:
+          scrape_interval: 15s
+          evaluation_interval: 15s
+        rule_files:
+          - /etc/prometheus/prometheus_rules.yml
+        scrape_configs:
+          - job_name: 'snmp-exporter-if-mib'
+            # https://prometheus.io/docs/prometheus/latest/configuration/configuration/#scrape_config
+            scrape_interval: 2m
+            scrape_timeout: 1m 
+            static_configs:
+              - targets:
+                # huawei switch
+                - '10.1.1.1'
+                # mikrotik router
+                - '10.1.1.254`
+            metrics_path: '/snmp'
+            params:
+              module: ['if_mib']
+            relabel_configs:
+              - source_labels: ['__address__']
+                target_label: '__param_target'
+              - source_labels: ['__param_target']
+                target_label: 'instance'
+              - target_label: '__address__'
+                replacement: 'snmp-exporter-cluster-ip-service.default.svc.cluster.local:9116'
+          - job_name: 'snmp-exporter-mikrotik-router'
+            # https://prometheus.io/docs/prometheus/latest/configuration/configuration/#scrape_config
+            scrape_interval: 1m
+            scrape_timeout: 30s
+            static_configs:
+              - targets:
+                # mikrotik router
+                - '10.1.1.254'
+            metrics_path: '/snmp'
+            params:
+              module: ['mikrotik']
+            relabel_configs:
+              - source_labels: ['__address__']
+                target_label: '__param_target'
+              - source_labels: ['__param_target']
+                target_label: 'instance'
+              - target_label: '__address__'
+                replacement: 'snmp-exporter-cluster-ip-service.default.svc.cluster.local:9116'
+          - job_name: 'snmp-exporter-huawei-switch'
+            # https://prometheus.io/docs/prometheus/latest/configuration/configuration/#scrape_config
+            scrape_interval: 1m
+            scrape_timeout: 30s
+            static_configs:
+              - targets:
+                # huawei switch
+                - '10.1.1.1'
+            metrics_path: '/snmp'
+            params:
+              module: ['huawei_sw']
+            relabel_configs:
+              - source_labels: ['__address__']
+                target_label: '__param_target'
+              - source_labels: ['__param_target']
+                target_label: 'instance'
+              - target_label: '__address__'
+                replacement: 'snmp-exporter-cluster-ip-service.default.svc.cluster.local:9116'
+          - job_name: 'mktxp-exporter-mikrotik-router'
+            scrape_interval: 3m
+            scrape_timeout: 30s
+            static_configs:
+              - targets:
+                - 'mktxp-exporter-cluster-ip-service.default.svc.cluster.local:49090'
+          - job_name: 'node-exporter'
+            static_configs:
+              # Ubuntu machine with node_exporter
+              - targets: ['192.168.0.10:9100']
+      prometheus_rules.yml: |-
+    ```
 2. `push` to the k8s cluster repository:
-```bash
-git add .
-git commit -m "Add 192.168.0.10 node_exporter target to Prometheus ConfigMap"
-git push origin main
-```
+    ```bash
+    git add .
+    git commit -m "Add 192.168.0.10 node_exporter target to Prometheus ConfigMap"
+    git push origin main
+    ```
 3. On the k8s node, apply the `rollout restart` command for the `prometheus-deployment` object after the [pipeline](https://timeforplanb123.github.io/kubernetes/k8s-monitoring-part-three-gitlab-agent/#gitlab-pipeline){:target="_blank"} updates the k8s cluster:
-```bash
-kubectl rollout restart deployment prometheus-deployment
-```
+    ```bash
+    kubectl rollout restart deployment prometheus-deployment
+    ```
 Now, let's add the Grafana Node Exporter dashboard. For example, [11074](https://grafana.com/grafana/dashboards/11074-node-exporter-for-prometheus-dashboard-en-v20201010/){:target="_blank"}
