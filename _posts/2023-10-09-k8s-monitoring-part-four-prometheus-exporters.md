@@ -22,7 +22,7 @@ toc_label: "Getting Started"
 [kubernetes-part1-post]: {{ "" | relative_url }}{% post_url 2023-02-19-k8s-monitoring-part-one-k8s-cluster %}
 [kubernetes-part2-post]: {{ "" | relative_url }}{% post_url 2023-02-25-k8s-monitoring-part-two-snmp %}
 [kubernetes-part3-post]: {{ "" | relative_url }}{% post_url 2023-05-08-k8s-monitoring-part-three-gitlab-agent %}
-[kubernetes-part4-post]: {{ "" | relative_url }}{% post_url 2023-10-03-k8s-monitoring-part-four-prometheus-exporters %}
+[kubernetes-part4-post]: {{ "" | relative_url }}{% post_url 2023-10-09-k8s-monitoring-part-four-prometheus-exporters %}
 
 
 ## Prometheus exporters
