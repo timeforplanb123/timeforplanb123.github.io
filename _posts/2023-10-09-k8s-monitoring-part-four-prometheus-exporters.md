@@ -40,11 +40,8 @@ To convert SNMP OIDs values to Prometheus metrics, the official [Prometheus SNMP
 SNMP exporter is supplied with a [default configuration](https://github.com/prometheus/snmp_exporter/tree/main#configuration){:target="_blank"} that describes both the `IF-MIB` module and some vendor MIBs. Therefore, to collect basic metrics, it is enough to configure SNMP on network devices, install SNMP Exporter in Kubernetes cluster and [configure Prometheus](https://github.com/prometheus/snmp_exporter/tree/main#prometheus-configuration){:target="_blank"}. That's where I'll start.
 
 1. Configuring SNMP on network devices
-
 I have 2 network devices that I will use as an example, Mikrotik Router and old Huawei 23 series switch with configured `10.1.1.254` and `10.1.1.1` ip addresses respectively. On each device, I configured `SNMPv2c` with a `public` community. Usually it is not difficult to find an example of an SNMP configuration for a specific network device, so I will not give an example for my network devices.
-
 2. Preparing manifests for snmp exporter
-
 ```yaml
 # k8s/snmp-exporter/snmp-exporter-deployment.yaml
 apiVersion: apps/v1
@@ -100,9 +97,7 @@ data:
     # https://github.com/prometheus/snmp_exporter/blob/main/snmp.yml
 ```
 3. Configuring Prometheus
-
 I'll add new jobs to the Prometheus ConfigMap:
-
 ```yaml
 # k8s/prometheus/prometheus-config-map.yaml
 apiVersion: v1
