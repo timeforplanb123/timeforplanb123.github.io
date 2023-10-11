@@ -1,5 +1,6 @@
 ---
 title: Monitoring with Prometheus, Loki, Grafana and Kubernetes. Part 5. kube-prometheus-stack
+classes: wide
 excerpt: "Migration to kube-prometheus-stack"
 categories:
   - kubernetes
@@ -82,7 +83,7 @@ prometheus:
     hosts:
       - prometheus.domain.com
 ```
-Prometheus object will be started with the "--web.external-url=http://prometheus.domain.com/prometheus/", "--web.route-prefix=/prometheus" arguments and is available via nginx at `https://prometheus.domain.com/prometheus`(see `externalUrl` option from [prometheus.yaml template](https://github.com/prometheus-community/helm-charts/blob/main/charts/kube-prometheus-stack/templates/prometheus/prometheus.yaml){:target="_blank"} and `paths` option from [ingress.yaml template](https://github.com/prometheus-community/helm-charts/blob/main/charts/kube-prometheus-stack/templates/prometheus/ingress.yaml){:target="_blank"}).
+Prometheus object will be started with the `"--web.external-url=http://prometheus.domain.com/prometheus/"`, `"--web.route-prefix=/prometheus"` arguments and is available via nginx at `https://prometheus.domain.com/prometheus`(see `externalUrl` option from [prometheus.yaml template](https://github.com/prometheus-community/helm-charts/blob/main/charts/kube-prometheus-stack/templates/prometheus/prometheus.yaml){:target="_blank"} and `paths` option from [ingress.yaml template](https://github.com/prometheus-community/helm-charts/blob/main/charts/kube-prometheus-stack/templates/prometheus/ingress.yaml){:target="_blank"}).
 
 What if I don't have DNS and I would like to have access to prometheus via nginx node ip? Hardcode the `ExternalURL` option:
 ```yaml
@@ -595,40 +596,40 @@ git push origin main
 
 Now I will add an existing loki deployment(see [Part 1](https://timeforplanb123.github.io/kubernetes/k8s-monitoring-part-one-k8s-cluster/#deployment){:target="_blank"} to the grafana datasource list:
 - create a ConfigMap in the repository, for example, `monitoring/manifests/grafana/datasources/loki.yaml` with the following content:
-```yaml
-apiVersion: v1
-data:
-  loki.yaml: |-
-    apiVersion: 1
-    datasources:
-    - name: Loki
-      type: loki
-      uid: loki
-      url: http://loki-cluster-ip-service.default.svc.cluster.local:3100/
-      access: proxy
-      isDefault: false
-kind: ConfigMap
-metadata:
-  annotations:
-    meta.helm.sh/release-name: stable
-    meta.helm.sh/release-namespace: default
-  labels:
-    app: kube-prometheus-stack-grafana
-    app.kubernetes.io/instance: stable
-    app.kubernetes.io/managed-by: Helm
-    app.kubernetes.io/part-of: kube-prometheus-stack
-    grafana_datasource: "1"
-    heritage: Helm
-    release: stable
-  name: stable-kube-prometheus-sta-grafana-loki-datasource
-  namespace: default
-```
+    ```yaml
+    apiVersion: v1
+    data:
+      loki.yaml: |-
+        apiVersion: 1
+        datasources:
+        - name: Loki
+          type: loki
+          uid: loki
+          url: http://loki-cluster-ip-service.default.svc.cluster.local:3100/
+          access: proxy
+          isDefault: false
+    kind: ConfigMap
+    metadata:
+      annotations:
+        meta.helm.sh/release-name: stable
+        meta.helm.sh/release-namespace: default
+    labels:
+      app: kube-prometheus-stack-grafana
+      app.kubernetes.io/instance: stable
+      app.kubernetes.io/managed-by: Helm
+      app.kubernetes.io/part-of: kube-prometheus-stack
+      grafana_datasource: "1"
+      heritage: Helm
+      release: stable
+    name: stable-kube-prometheus-sta-grafana-loki-datasource
+    namespace: default
+    ```
 - commit to the cluster repository:
-```bash
-git add .
-git commit -m "Add Loki datasource to grafana"
-git push origin main
-```
+    ```bash
+    git add .
+    git commit -m "Add Loki datasource to grafana"
+    git push origin main
+    ```
 - the loki datasource will appear in the Grafana web UI after the pipeline has completed all the jobs
 
 By default, grafana helm chart creates [emptyDir volumes](https://kubernetes.io/docs/concepts/storage/volumes/#emptydir){:target="_blank"} to store grafana dashboards and datasources. emptyDir is not a permanent storage and restarting the deployment object will result in data loss. But the approach described above for creating dashboards and datasources using ConfigMap objects will avoid this. This solution is great for both a single node cluster and a cluster with a large number of nodes (in this case, to achieve availability, the number of replicas must be > 1). It also corresponds to the Configurations as Code approach, and the repository performs an additional role of a repository of configuration data.
