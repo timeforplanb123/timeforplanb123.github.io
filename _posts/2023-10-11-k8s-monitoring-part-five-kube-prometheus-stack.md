@@ -650,78 +650,78 @@ I will send alerting notifications to telegram, just for example. I will create 
 Now I will configure alertmanager to send notifications. I will create 2 templates describing the format of the message sent to telegram, long message and short message. The first one will be used by default and provide maximum information from prometheus labels. The second will have a short format and provide an opportunity to specify additional information manually using annotations.
 
 Taking into account the previously configured options, the alertmanager configuration in the `kube-prometheus-stack.the yaml` file will look like this(a description of the configured options can be found in [the official documentation](https://prometheus.io/docs/alerting/latest/configuration/#configuration){:target="_blank"}):
-```yaml
-alertmanager:
-  alertmanagerSpec:
-    routePrefix: /prom-operator-alertmanager
-  ingress:
-    pathType: ImplementationSpecific
-    ingressClassName: nginx
-    enabled: true
-  config:
-    route:
-      receiver: 'telegram-default-long-receiver'
-      group_by: ['...']
-      group_wait: 30s
-      group_interval: 1m
-      repeat_interval: 4h
-      routes:
-      - receiver: 'telegram-short-receiver'
-        matchers:
-        - message_type = "short"
-      # Note that you must specify null receiver,
-      # since it is defined in the default configuration file
-      - receiver: 'null'
-        matchers:
-        - alertname =~ ".*Null"
-    receivers:
-    - name: 'telegram-default-long-receiver'
-      telegram_configs:
-      - send_resolved: true
-        bot_token: 'your_bot_token'
-        api_url: 'https://api.telegram.org'
-        chat_id: your_chat_id
-        parse_mode: 'HTML'
-        message: '{{ template "telegram-default-long.message" . }}'
-    - name: 'telegram-short-receiver'
-      telegram_configs:
-      - send_resolved: true
-        bot_token: 'your_bot_token'
-        api_url: 'https://api.telegram.org'
-        chat_id: your_chat_id
-        parse_mode: 'HTML'
-        message: '{{ template "telegram-short.message" . }}'
-    - name: 'null'
-  templateFiles:
-    telegram-default-long-template.tmpl: |-
-      {{ define "cluster" }}{{ .ExternalURL | reReplaceAll ".*alertmanager\\.(.*)" "$1" }}{{ end }}
-  
-      {{ define "telegram-default-long.message" }}
-      {{- $root := . -}}
-      {{ range .Alerts }}
-      {{ if eq .Status "firing" }}🔥 {{ end }}{{ if eq .Status "resolved" }}✅ {{ end }}{{ .Status | title }}
-      Alert: {{ .Labels.alertname }}
-      Summary: {{ .Annotations.summary }}  
-      Description: {{ .Annotations.description }}
-      Details: {{ range .Labels.SortedPairs }}{{ if eq .Name "alertname" }} {{ else if match ".*http://.*" .Value }}
-      - <a href="{{ .Value }}">{{ .Name }}</a>{{ else }}
-      - {{ .Name }}: {{ .Value }}{{ end }}{{ end }}
-      - cluster: {{ template "cluster" $root }}
-      {{ if .Annotations.runbook_url }}- <a href="{{ .Annotations.runbook_url }}">runbook</a>{{ else }} {{ end }}
-      {{ end }}
-      {{ end }}
-    telegram-short-template.tmpl: |-
-      {{ define "telegram-short.message" }}
-      {{ if eq .Status "firing" }}🔥 {{ end }}{{ if eq .Status "resolved" }}✅ {{ end }}{{ .Status | title }}
-      {{ .GroupLabels.alertname }}
-      {{ range .Alerts }}
-      {{ .Annotations.description }}
-      {{ range .Annotations.SortedPairs }}{{ if eq .Name "description" }} {{ else if match ".*http.*" .Value }}
-      <a href="{{ .Value }}">{{ .Name }}</a>{{ else }}
-      {{ .Name }}: {{ .Value }}{{ end }}{{ end }}
-      {{ end }}
-      {{ end }}
-```
+    ```yaml
+    alertmanager:
+      alertmanagerSpec:
+        routePrefix: /prom-operator-alertmanager
+      ingress:
+        pathType: ImplementationSpecific
+        ingressClassName: nginx
+        enabled: true
+      config:
+        route:
+          receiver: 'telegram-default-long-receiver'
+          group_by: ['...']
+          group_wait: 30s
+          group_interval: 1m
+          repeat_interval: 4h
+          routes:
+          - receiver: 'telegram-short-receiver'
+            matchers:
+            - message_type = "short"
+          # Note that you must specify null receiver,
+          # since it is defined in the default configuration file
+          - receiver: 'null'
+            matchers:
+            - alertname =~ ".*Null"
+        receivers:
+        - name: 'telegram-default-long-receiver'
+          telegram_configs:
+          - send_resolved: true
+            bot_token: 'your_bot_token'
+            api_url: 'https://api.telegram.org'
+            chat_id: your_chat_id
+            parse_mode: 'HTML'
+            message: '{{ template "telegram-default-long.message" . }}'
+        - name: 'telegram-short-receiver'
+          telegram_configs:
+          - send_resolved: true
+            bot_token: 'your_bot_token'
+            api_url: 'https://api.telegram.org'
+            chat_id: your_chat_id
+            parse_mode: 'HTML'
+            message: '{{ template "telegram-short.message" . }}'
+        - name: 'null'
+      templateFiles:
+        telegram-default-long-template.tmpl: |-
+          {{ define "cluster" }}{{ .ExternalURL | reReplaceAll ".*alertmanager\\.(.*)" "$1" }}{{ end }}
+      
+          {{ define "telegram-default-long.message" }}
+          {{- $root := . -}}
+          {{ range .Alerts }}
+          {{ if eq .Status "firing" }}🔥 {{ end }}{{ if eq .Status "resolved" }}✅ {{ end }}{{ .Status | title }}
+          Alert: {{ .Labels.alertname }}
+          Summary: {{ .Annotations.summary }}  
+          Description: {{ .Annotations.description }}
+          Details: {{ range .Labels.SortedPairs }}{{ if eq .Name "alertname" }} {{ else if match ".*http://.*" .Value }}
+          - <a href="{{ .Value }}">{{ .Name }}</a>{{ else }}
+          - {{ .Name }}: {{ .Value }}{{ end }}{{ end }}
+          - cluster: {{ template "cluster" $root }}
+          {{ if .Annotations.runbook_url }}- <a href="{{ .Annotations.runbook_url }}">runbook</a>{{ else }} {{ end }}
+          {{ end }}
+          {{ end }}
+        telegram-short-template.tmpl: |-
+          {{ define "telegram-short.message" }}
+          {{ if eq .Status "firing" }}🔥 {{ end }}{{ if eq .Status "resolved" }}✅ {{ end }}{{ .Status | title }}
+          {{ .GroupLabels.alertname }}
+          {{ range .Alerts }}
+          {{ .Annotations.description }}
+          {{ range .Annotations.SortedPairs }}{{ if eq .Name "description" }} {{ else if match ".*http.*" .Value }}
+          <a href="{{ .Value }}">{{ .Name }}</a>{{ else }}
+          {{ .Name }}: {{ .Value }}{{ end }}{{ end }}
+          {{ end }}
+          {{ end }}
+    ```
 
 Since kube-prometheus-stack is installed with a set of prometheus alerting rules (see [above](https://timeforplanb123.github.io/k8s-monitoring-part-four-kube-prometheus-stack/#migration-of-grafana-dashboards-and-grafana-datasources){:target="_blank"}), then after updating the configuration, you can see alerting notifications in telegram chat, for example, a message about the correct operation of Alertmanager, formatted using the `telegram-default-long-template.tmpl` template:
 <figure>
@@ -846,154 +846,154 @@ telegram-default-long-template.tmpl
 ## Conclusion
 
 After transferring all prometheus rules and grafana dashboards, it remains only to change temporary ingress paths for grafana, prometheus, alertmanager from kube-prometheus-stack to permanent ones and delete unused kubernetes objects. Final `kube-prometheus-stack.yml` with permanent ingress paths:
-```yaml
-# prometheus rules
-additionalPrometheusRulesMap:
-  node-exporter-test-alerting-rules:
-    groups:
-      - name: NodeAlerts 
-        rules:
-        - alert: InstanceDown
-          expr: up == 0
-          for: 1m
-          labels:
-            severity: critical
-            sender: prometheus
-            category: metrics
-            custom: custom
-            message_type: short
-          annotations:
-            description: '{{ $labels.instance }} of job {{ $labels.job }} has been down for more than 1 minute.'
-            severity: critical
-            sender: prometheus
-            category: metrics
-# prometheus
-prometheus:
-  prometheusSpec:
-    externalUrl: http://stable-kube-prometheus-sta-prometheus.default:9090/prometheus
-    routePrefix: /prometheus
-    additionalScrapeConfigs:
-      - job_name: 'node-exporter'
-        static_configs:
-          - targets: 
-            - '192.168.0.10:9100'
-      - job_name: 'mktxp-exporter'
-        scrape_interval: 3m
-        scrape_timeout: 1m
-        static_configs:
-          - targets: 
-            - 'mktxp-exporter-cluster-ip-service.default.svc.cluster.local:49090'    
-  ingress:
-    pathType: ImplementationSpecific
-    ingressClassName: nginx
-    enabled: true
-# grafana
-grafana:
-  ingress:
-    pathType: ImplementationSpecific
-    ingressClassName: nginx
-    enabled: true
-    path: /
-  grafana.ini:
-    server:
-      root_url: http://localhost:3000/
-# alertmanager
-alertmanager:
-  alertmanagerSpec:
-    routePrefix: /prom-operator-alertmanager
-  ingress:
-    pathType: ImplementationSpecific
-    ingressClassName: nginx
-    enabled: true
-  config:
-    route:
-      receiver: 'telegram-default-long-receiver'
-      group_by: ['...']
-      group_wait: 30s
-      group_interval: 1m
-      repeat_interval: 4h
-      routes:
-      - receiver: 'telegram-short-receiver'
-        matchers:
-        - message_type = "short"
-      - receiver: 'null'
-        matchers:
-        - alertname =~ ".*Null"
-    receivers:
-    - name: 'telegram-default-long-receiver'
-      telegram_configs:
-      - send_resolved: true
-        bot_token: 'your_bot_token'
-        api_url: 'https://api.telegram.org'
-        chat_id: your_chat_id
-        parse_mode: 'HTML'
-        message: '{{ template "telegram-default-long.message" . }}'
-    - name: 'telegram-short-receiver'
-      telegram_configs:
-      - send_resolved: true
-        bot_token: 'your_bot_token'
-        api_url: 'https://api.telegram.org'
-        chat_id: your_chat_id
-        parse_mode: 'HTML'
-        message: '{{ template "telegram-short.message" . }}'
-    - name: 'null'
-  templateFiles:
-    telegram-default-long-template.tmpl: |-
-      {{ define "cluster" }}{{ .ExternalURL | reReplaceAll ".*alertmanager\\.(.*)" "$1" }}{{ end }}
-  
-      {{ define "telegram-default-long.message" }}
-      {{- $root := . -}}
-      {{ range .Alerts }}
-      {{ if eq .Status "firing" }}🔥 {{ end }}{{ if eq .Status "resolved" }}✅ {{ end }}{{ .Status | title }}
-      Alert: {{ .Labels.alertname }}
-      Summary: {{ .Annotations.summary }}  
-      Description: {{ .Annotations.description }}
-      Details: {{ range .Labels.SortedPairs }}{{ if eq .Name "alertname" }} {{ else if match ".*http://.*" .Value }}
-      - <a href="{{ .Value }}">{{ .Name }}</a>{{ else }}
-      - {{ .Name }}: {{ .Value }}{{ end }}{{ end }}
-      - cluster: {{ template "cluster" $root }}
-      {{ if .Annotations.runbook_url }}- <a href="{{ .Annotations.runbook_url }}">runbook</a>{{ else }} {{ end }}
-      {{ end }}
-      {{ end }}
-    telegram-short-template.tmpl: |-
-      {{ define "telegram-short.message" }}
-      {{ if eq .Status "firing" }}🔥 {{ end }}{{ if eq .Status "resolved" }}✅ {{ end }}{{ .Status | title }}
-      {{ .GroupLabels.alertname }}
-      {{ range .Alerts }}
-      {{ .Annotations.description }}
-      {{ range .Annotations.SortedPairs }}{{ if eq .Name "description" }} {{ else if match ".*http.*" .Value }}
-      <a href="{{ .Value }}">{{ .Name }}</a>{{ else }}
-      {{ .Name }}: {{ .Value }}{{ end }}{{ end }}
-      {{ end }}
-      {{ end }}
-```
+    ```yaml
+    # prometheus rules
+    additionalPrometheusRulesMap:
+      node-exporter-test-alerting-rules:
+        groups:
+          - name: NodeAlerts 
+            rules:
+            - alert: InstanceDown
+              expr: up == 0
+              for: 1m
+              labels:
+                severity: critical
+                sender: prometheus
+                category: metrics
+                custom: custom
+                message_type: short
+              annotations:
+                description: '{{ $labels.instance }} of job {{ $labels.job }} has been down for more than 1 minute.'
+                severity: critical
+                sender: prometheus
+                category: metrics
+    # prometheus
+    prometheus:
+      prometheusSpec:
+        externalUrl: http://stable-kube-prometheus-sta-prometheus.default:9090/prometheus
+        routePrefix: /prometheus
+        additionalScrapeConfigs:
+          - job_name: 'node-exporter'
+            static_configs:
+              - targets: 
+                - '192.168.0.10:9100'
+          - job_name: 'mktxp-exporter'
+            scrape_interval: 3m
+            scrape_timeout: 1m
+            static_configs:
+              - targets: 
+                - 'mktxp-exporter-cluster-ip-service.default.svc.cluster.local:49090'    
+      ingress:
+        pathType: ImplementationSpecific
+        ingressClassName: nginx
+        enabled: true
+    # grafana
+    grafana:
+      ingress:
+        pathType: ImplementationSpecific
+        ingressClassName: nginx
+        enabled: true
+        path: /
+      grafana.ini:
+        server:
+          root_url: http://localhost:3000/
+    # alertmanager
+    alertmanager:
+      alertmanagerSpec:
+        routePrefix: /prom-operator-alertmanager
+      ingress:
+        pathType: ImplementationSpecific
+        ingressClassName: nginx
+        enabled: true
+      config:
+        route:
+          receiver: 'telegram-default-long-receiver'
+          group_by: ['...']
+          group_wait: 30s
+          group_interval: 1m
+          repeat_interval: 4h
+          routes:
+          - receiver: 'telegram-short-receiver'
+            matchers:
+            - message_type = "short"
+          - receiver: 'null'
+            matchers:
+            - alertname =~ ".*Null"
+        receivers:
+        - name: 'telegram-default-long-receiver'
+          telegram_configs:
+          - send_resolved: true
+            bot_token: 'your_bot_token'
+            api_url: 'https://api.telegram.org'
+            chat_id: your_chat_id
+            parse_mode: 'HTML'
+            message: '{{ template "telegram-default-long.message" . }}'
+        - name: 'telegram-short-receiver'
+          telegram_configs:
+          - send_resolved: true
+            bot_token: 'your_bot_token'
+            api_url: 'https://api.telegram.org'
+            chat_id: your_chat_id
+            parse_mode: 'HTML'
+            message: '{{ template "telegram-short.message" . }}'
+        - name: 'null'
+      templateFiles:
+        telegram-default-long-template.tmpl: |-
+          {{ define "cluster" }}{{ .ExternalURL | reReplaceAll ".*alertmanager\\.(.*)" "$1" }}{{ end }}
+      
+          {{ define "telegram-default-long.message" }}
+          {{- $root := . -}}
+          {{ range .Alerts }}
+          {{ if eq .Status "firing" }}🔥 {{ end }}{{ if eq .Status "resolved" }}✅ {{ end }}{{ .Status | title }}
+          Alert: {{ .Labels.alertname }}
+          Summary: {{ .Annotations.summary }}  
+          Description: {{ .Annotations.description }}
+          Details: {{ range .Labels.SortedPairs }}{{ if eq .Name "alertname" }} {{ else if match ".*http://.*" .Value }}
+          - <a href="{{ .Value }}">{{ .Name }}</a>{{ else }}
+          - {{ .Name }}: {{ .Value }}{{ end }}{{ end }}
+          - cluster: {{ template "cluster" $root }}
+          {{ if .Annotations.runbook_url }}- <a href="{{ .Annotations.runbook_url }}">runbook</a>{{ else }} {{ end }}
+          {{ end }}
+          {{ end }}
+        telegram-short-template.tmpl: |-
+          {{ define "telegram-short.message" }}
+          {{ if eq .Status "firing" }}🔥 {{ end }}{{ if eq .Status "resolved" }}✅ {{ end }}{{ .Status | title }}
+          {{ .GroupLabels.alertname }}
+          {{ range .Alerts }}
+          {{ .Annotations.description }}
+          {{ range .Annotations.SortedPairs }}{{ if eq .Name "description" }} {{ else if match ".*http.*" .Value }}
+          <a href="{{ .Value }}">{{ .Name }}</a>{{ else }}
+          {{ .Name }}: {{ .Value }}{{ end }}{{ end }}
+          {{ end }}
+          {{ end }}
+    ```
 
 Now, to complete the migration, I need to:
 - on k8s cluster machine delete unused objects:
-```bash
-~$ kubectl delete ingress ingress-service
-
-~$ cd k8s
-~/k8s$ kubectl delete -f alertmanager
-~/k8s$ kubectl delete -f prometheus
-~/k8s$ kubectl delete -f snmp-exporter
-~/k8s$ kubectl delete -f grafana
-```
+    ```bash
+    ~$ kubectl delete ingress ingress-service
+    
+    ~$ cd k8s
+    ~/k8s$ kubectl delete -f alertmanager
+    ~/k8s$ kubectl delete -f prometheus
+    ~/k8s$ kubectl delete -f snmp-exporter
+    ~/k8s$ kubectl delete -f grafana
+    ```
 - on desktop machine rename the `k8s` directory to `manifests` directory(see `kubectl apply` job from [pipeline](https://timeforplanb123.github.io/kubernetes/k8s-monitoring-part-three-gitlab-agent/#gitlab-pipeline){:target="_blank"}), delete unused manifests and `push` changes to remote GitLab repository:
-```bash
-# k8s is repository name
-~$ cd k8s
-# rename the "k8s" directory to "manifests" directory
-~/k8s$ mv k8s manifests
-
-# delete unused manifests
-~/k8s$ rm -rf alertmanager prometheus snmp-exporter grafana
-
-# push to remote repo
-~/k8s$ git add .
-~/k8s$ git commit -m "Oh! It's first upgrade to the kube-prometheus-stack!"
-~/k8s$ git push origin main
-```
+    ```bash
+    # k8s is repository name
+    ~$ cd k8s
+    # rename the "k8s" directory to "manifests" directory
+    ~/k8s$ mv k8s manifests
+    
+    # delete unused manifests
+    ~/k8s$ rm -rf alertmanager prometheus snmp-exporter grafana
+    
+    # push to remote repo
+    ~/k8s$ git add .
+    ~/k8s$ git commit -m "Oh! It's first upgrade to the kube-prometheus-stack!"
+    ~/k8s$ git push origin main
+    ```
 After `git push` command, my `k8s` repository looks like this:
 <figure>
     <a href="{{ site.baseurl }}/assets/images/kubernetes_monitoring/prometheus-operator/k8s_repo.png"><img src="{{ site.baseurl }}/assets/images/kubernetes_monitoring/prometheus-operator/k8s_repo.png"></a>
