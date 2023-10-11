@@ -1,6 +1,6 @@
 ---
-title: Monitoring with Prometheus, Loki, Grafana and Kubernetes. Part 3. Gitlab Agent
-excerpt: "How to connect a Kubernetes cluster to Gitlab."
+title: Monitoring with Prometheus, Loki, Grafana and Kubernetes. Part 3. GitLab Agent
+excerpt: "How to connect a Kubernetes cluster to GitLab."
 categories:
   - kubernetes
 tags:
@@ -15,13 +15,15 @@ toc_label: "Getting Started"
 | ------------------------------------------- | ----------------------------------------------------- |
 | [Monitoring with Prometheus, Loki, Grafana and Kubernetes. Part 1. Kubernetes cluster][kubernetes-part1-post] | Here is about basic configuration of Kubernetes monitoring cluster |
 | [Monitoring with Prometheus, Loki, Grafana and Kubernetes. Part 2. SNMP][kubernetes-part2-post] | Here is about SNMP O_O |
-| [Monitoring with Prometheus, Loki, Grafana and Kubernetes. Part 3. Gitlab Agent][kubernetes-part3-post] | How to connect a Kubernetes cluster to Gitlab |
+| [Monitoring with Prometheus, Loki, Grafana and Kubernetes. Part 3. GitLab Agent][kubernetes-part3-post] | How to connect a Kubernetes cluster to GitLab |
 | [Monitoring with Prometheus, Loki, Grafana and Kubernetes. Part 4. Prometheus exporters][kubernetes-part4-post] | Exporting Prometheus metrics |
+| [Monitoring with Prometheus, Loki, Grafana and Kubernetes. Part 5. kube-prometheus-stack][kubernetes-part5-post] | Migration to kube-prometheus-stack |
 
 [kubernetes-part1-post]: {{ "" | relative_url }}{% post_url 2023-02-19-k8s-monitoring-part-one-k8s-cluster %}
 [kubernetes-part2-post]: {{ "" | relative_url }}{% post_url 2023-02-25-k8s-monitoring-part-two-snmp %}
 [kubernetes-part3-post]: {{ "" | relative_url }}{% post_url 2023-05-08-k8s-monitoring-part-three-gitlab-agent %}
 [kubernetes-part4-post]: {{ "" | relative_url }}{% post_url 2023-10-09-k8s-monitoring-part-four-prometheus-exporters %}
+[kubernetes-part5-post]: {{ "" | relative_url }}{% post_url 2023-10-11-k8s-monitoring-part-five-kube-prometheus-stack %}
 
 
 In this part, I wanted to write about the [SNMP Exporter](https://github.com/prometheus/snmp_exporter){:target="_blank"}, but I decided, that it's time to think about automating changes in the cluster. Therefore, here I will connect the Kubernetes cluster to Gitlab using the Gitlab Agent. The result will be the ability to manage the cluster using the Gitlab pipeline. All this in the "How to" format .
