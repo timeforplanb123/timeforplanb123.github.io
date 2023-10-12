@@ -1,0 +1,10 @@
+{{ define "telegram-short.message" }}
+{{ if eq .Status "firing" }}🔥 {{ end }}{{ if eq .Status "resolved" }}✅ {{ end }}{{ .Status | title }}
+{{ .GroupLabels.alertname }}
+{{ range .Alerts }}
+{{ .Annotations.description }}
+{{ range .Annotations.SortedPairs }}{{ if eq .Name "description" }} {{ else if match ".*http.*" .Value }}
+<a href="{{ .Value }}">{{ .Name }}</a>{{ else }}
+{{ .Name }}: {{ .Value }}{{ end }}{{ end }}
+{{ end }}
+{{ end }}

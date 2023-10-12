@@ -470,7 +470,7 @@ additionalPrometheusRulesMap:
             severity: critical
             sender: prometheus
             category: metrics
-            # этот лейбл будет использовать alertmanager для создания шаблона
+            # this label will be used by the alertmanager to create a template
             message_type: short
           annotations:
             description: '{{ $labels.instance }} of job {{ $labels.job }} has been down for more than 1 minute.'
@@ -650,7 +650,7 @@ I will send alerting notifications to telegram, just for example. I will create 
 Now I will configure alertmanager to send notifications. I will create 2 templates describing the format of the message sent to telegram, long message and short message. The first one will be used by default and provide maximum information from prometheus labels. The second will have a short format and provide an opportunity to specify additional information manually using annotations.
 
 Taking into account the previously configured options, the alertmanager configuration in the `kube-prometheus-stack.the yaml` file will look like this(a description of the configured options can be found in [the official documentation](https://prometheus.io/docs/alerting/latest/configuration/#configuration){:target="_blank"}):
-```text
+```yaml
 alertmanager:
   alertmanagerSpec:
     routePrefix: /prom-operator-alertmanager
@@ -694,33 +694,13 @@ alertmanager:
     - name: 'null'
   templateFiles:
     telegram-default-long-template.tmpl: |-
-      {{ define "cluster" }}{{ .ExternalURL | reReplaceAll ".*alertmanager\\.(.*)" "$1" }}{{ end }}
-  
-      {{ define "telegram-default-long.message" }}
-      {{- $root := . -}}
-      {{ range .Alerts }}
-      {{ if eq .Status "firing" }}🔥 {{ end }}{{ if eq .Status "resolved" }}✅ {{ end }}{{ .Status | title }}
-      Alert: {{ .Labels.alertname }}
-      Summary: {{ .Annotations.summary }}  
-      Description: {{ .Annotations.description }}
-      Details: {{ range .Labels.SortedPairs }}{{ if eq .Name "alertname" }} {{ else if match ".*http://.*" .Value }}
-      - <a href="{{ .Value }}">{{ .Name }}</a>{{ else }}
-      - {{ .Name }}: {{ .Value }}{{ end }}{{ end }}
-      - cluster: {{ template "cluster" $root }}
-      {{ if .Annotations.runbook_url }}- <a href="{{ .Annotations.runbook_url }}">runbook</a>{{ else }} {{ end }}
-      {{ end }}
-      {{ end }}
+      # see "telegram-default-long-template.tmpl" file
+      # https://github.com/timeforplanb123/timeforplanb123.github.io/blob/master/_posts/telegram-default-long-template.tmpl
+      # and copypaste it here
     telegram-short-template.tmpl: |-
-      {{ define "telegram-short.message" }}
-      {{ if eq .Status "firing" }}🔥 {{ end }}{{ if eq .Status "resolved" }}✅ {{ end }}{{ .Status | title }}
-      {{ .GroupLabels.alertname }}
-      {{ range .Alerts }}
-      {{ .Annotations.description }}
-      {{ range .Annotations.SortedPairs }}{{ if eq .Name "description" }} {{ else if match ".*http.*" .Value }}
-      <a href="{{ .Value }}">{{ .Name }}</a>{{ else }}
-      {{ .Name }}: {{ .Value }}{{ end }}{{ end }}
-      {{ end }}
-      {{ end }}
+      # see "telegram-short-template.tmpl" file
+      # https://github.com/timeforplanb123/timeforplanb123.github.io/blob/master/_posts/telegram-short-template.tmpl
+      # and copypaste it here
 ```
 
 Since kube-prometheus-stack is installed with a set of prometheus alerting rules (see [above](https://timeforplanb123.github.io/k8s-monitoring-part-four-kube-prometheus-stack/#migration-of-grafana-dashboards-and-grafana-datasources){:target="_blank"}), then after updating the configuration, you can see alerting notifications in telegram chat, for example, a message about the correct operation of Alertmanager, formatted using the `telegram-default-long-template.tmpl` template:
@@ -940,33 +920,13 @@ alertmanager:
     - name: 'null'
   templateFiles:
     telegram-default-long-template.tmpl: |-
-      {{ define "cluster" }}{{ .ExternalURL | reReplaceAll ".*alertmanager\\.(.*)" "$1" }}{{ end }}
-  
-      {{ define "telegram-default-long.message" }}
-      {{- $root := . -}}
-      {{ range .Alerts }}
-      {{ if eq .Status "firing" }}🔥 {{ end }}{{ if eq .Status "resolved" }}✅ {{ end }}{{ .Status | title }}
-      Alert: {{ .Labels.alertname }}
-      Summary: {{ .Annotations.summary }}  
-      Description: {{ .Annotations.description }}
-      Details: {{ range .Labels.SortedPairs }}{{ if eq .Name "alertname" }} {{ else if match ".*http://.*" .Value }}
-      - <a href="{{ .Value }}">{{ .Name }}</a>{{ else }}
-      - {{ .Name }}: {{ .Value }}{{ end }}{{ end }}
-      - cluster: {{ template "cluster" $root }}
-      {{ if .Annotations.runbook_url }}- <a href="{{ .Annotations.runbook_url }}">runbook</a>{{ else }} {{ end }}
-      {{ end }}
-      {{ end }}
+      # see "telegram-default-long-template.tmpl" file
+      # https://github.com/timeforplanb123/timeforplanb123.github.io/blob/master/_posts/telegram-default-long-template.tmpl
+      # and copypaste it here
     telegram-short-template.tmpl: |-
-      {{ define "telegram-short.message" }}
-      {{ if eq .Status "firing" }}🔥 {{ end }}{{ if eq .Status "resolved" }}✅ {{ end }}{{ .Status | title }}
-      {{ .GroupLabels.alertname }}
-      {{ range .Alerts }}
-      {{ .Annotations.description }}
-      {{ range .Annotations.SortedPairs }}{{ if eq .Name "description" }} {{ else if match ".*http.*" .Value }}
-      <a href="{{ .Value }}">{{ .Name }}</a>{{ else }}
-      {{ .Name }}: {{ .Value }}{{ end }}{{ end }}
-      {{ end }}
-      {{ end }}
+      # see "telegram-short-template.tmpl" file
+      # https://github.com/timeforplanb123/timeforplanb123.github.io/blob/master/_posts/telegram-short-template.tmpl
+      # and copypaste it here
 ```
 
 Now, to complete the migration, I need to:

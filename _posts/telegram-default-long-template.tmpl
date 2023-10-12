@@ -1,0 +1,16 @@
+{{ define "cluster" }}{{ .ExternalURL | reReplaceAll ".*alertmanager\\.(.*)" "$1" }}{{ end }}
+
+{{ define "telegram-default-long.message" }}
+{{- $root := . -}}
+{{ range .Alerts }}
+{{ if eq .Status "firing" }}🔥 {{ end }}{{ if eq .Status "resolved" }}✅ {{ end }}{{ .Status | title }}
+Alert: {{ .Labels.alertname }}
+Summary: {{ .Annotations.summary }}  
+Description: {{ .Annotations.description }}
+Details: {{ range .Labels.SortedPairs }}{{ if eq .Name "alertname" }} {{ else if match ".*http://.*" .Value }}
+- <a href="{{ .Value }}">{{ .Name }}</a>{{ else }}
+- {{ .Name }}: {{ .Value }}{{ end }}{{ end }}
+- cluster: {{ template "cluster" $root }}
+{{ if .Annotations.runbook_url }}- <a href="{{ .Annotations.runbook_url }}">runbook</a>{{ else }} {{ end }}
+{{ end }}
+{{ end }}
