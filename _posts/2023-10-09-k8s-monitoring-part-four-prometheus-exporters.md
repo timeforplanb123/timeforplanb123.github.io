@@ -1,7 +1,7 @@
 ---
 title: Monitoring with Prometheus, Loki, Grafana and Kubernetes. Part 4. Prometheus exporters
 classes: wide
-excerpt: "Exporting Prometheus metrics"
+excerpt: "Exporting Prometheus metrics."
 categories:
   - kubernetes
 tags:
