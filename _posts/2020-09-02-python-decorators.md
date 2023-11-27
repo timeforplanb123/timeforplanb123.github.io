@@ -574,7 +574,7 @@ foo()
 ### Полезные ссылки и источники примеров
 
 - [Декораторы](https://advpyneng.readthedocs.io/ru/latest/book/08_decorators/index.html){:target="_blank"}
-- [Примеры декораторов](https://github.com/natenka/advpyneng-examples-exercises/tree/master/examples/08_decorators){:target="_blank"}
+- [Примеры декораторов](https://github.com/natenka/advpyneng-examples-exercises/tree/main/examples/08_decorators){:target="_blank"}
 - [Примеры декораторов](https://realpython.com/primer-on-python-decorators/){:target="_blank"}
 - [Модуль functools](https://docs.python.org/3.11/library/functools.html){:target="_blank"}
 - [Класс-декоратор и декоратор класса](https://tirinox.ru/class-decorator/){:target="_blank"}
