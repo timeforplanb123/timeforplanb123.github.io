@@ -544,7 +544,7 @@ def decorator(func):
 	return decorated_func
 ```
 
-### Пример 7. Класс как декоратор
+### Пример 6. Класс как декоратор
 
 Функцию можно декорировать классом. Этот способ является альтернативой декораторам с аргументами.
 
@@ -571,7 +571,7 @@ foo()
 # foo
 ```
 
-### Полезные ссылки и источники примеров:
+### Полезные ссылки и источники примеров
 
 - [Декораторы](https://advpyneng.readthedocs.io/ru/latest/book/08_decorators/index.html)
 - [Примеры декораторов](https://github.com/natenka/advpyneng-examples-exercises/tree/master/examples/08_decorators)
