@@ -1,7 +1,7 @@
 ---
 title: Monitoring with Prometheus, Loki, Grafana and Kubernetes. Part 5. kube-prometheus-stack
 classes: wide
-excerpt: "Migration to kube-prometheus-stack"
+excerpt: "Migration to kube-prometheus-stack."
 categories:
   - kubernetes
 tags:
