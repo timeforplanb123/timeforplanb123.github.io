@@ -1,7 +1,7 @@
 ---
 title: Примеры использования декораторов в Python
 classes: wide
-excerpt: "Примеры использования декораторов в Python"
+excerpt: "Примеры использования декораторов в Python."
 categories:
   - code
   - notes
