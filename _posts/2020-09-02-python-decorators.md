@@ -395,7 +395,7 @@ if __name__ == "__main__":
 
 ### Пример 4. Декораторы классов
 
-Если необходимо декорировать каждый вызываемый метод класса (или не каждый, а конкретные), то можно сделать так - [тык](https://github.com/natenka/advpyneng-examples-exercises/blob/main/examples/08_decorators/03_decorating_classes/class_decorator_verbose.py)
+Если необходимо декорировать каждый вызываемый метод класса (или не каждый, а конкретные), то можно сделать так - [тык](https://github.com/natenka/advpyneng-examples-exercises/blob/main/examples/08_decorators/03_decorating_classes/class_decorator_verbose.py){:target="_blank"}
 
 Немного про используемые в примере функции:
 - `if callable(value) and name not in ('__repr__', '__str__')` - функция `callable(value)` возвращает `True` или `False` в зависимости от того, является ли объект `value `вызываемым, т.е. методом класса.
@@ -441,7 +441,7 @@ cls.__getattribute__(object, '__ge__')
 object.__getattribute__('__ge__')
 ```
 
-Не самый удачный пример такого класса-декоратора (полностью заменяет декорируемый класс) - [тык](https://tirinox.ru/class-decorator/)
+Не самый удачный пример такого класса-декоратора (полностью заменяет декорируемый класс) - [тык](https://tirinox.ru/class-decorator/){:target="_blank"}
 
 Создать новые методы в классе с помощью декораторов можно, например, так
 
@@ -463,12 +463,12 @@ class Book:
 	pass
 
 ```
-Пример - [тык](https://github.com/natenka/advpyneng-examples-exercises/blob/main/examples/08_decorators/03_decorating_classes/class_decorator_dataclass.py)
+Пример - [тык](https://github.com/natenka/advpyneng-examples-exercises/blob/main/examples/08_decorators/03_decorating_classes/class_decorator_dataclass.py){:target="_blank"}
 
 ### Пример 5. Модуль functools
 
 Определенно стоит изучить возможности модуля `functools`. В нем набор готовых декораторов.
-Документация на модуль - [тык](https://docs.python.org/3.11/library/functools.html).
+Документация на модуль - [тык](https://docs.python.org/3.11/library/functools.html){:target="_blank"}.
 
 Например, вы можете реализовать в своем классе один из методов `__lt__()`, `__le__()`, `__gt__()`, `__ge__()`, добавить `__eq__`, а все недостающие методы за вас реализует декоратор `total_ordering`:
 
@@ -573,8 +573,8 @@ foo()
 
 ### Полезные ссылки и источники примеров
 
-- [Декораторы](https://advpyneng.readthedocs.io/ru/latest/book/08_decorators/index.html)
-- [Примеры декораторов](https://github.com/natenka/advpyneng-examples-exercises/tree/master/examples/08_decorators)
-- [Примеры декораторов](https://realpython.com/primer-on-python-decorators/)
-- [Модуль functools](https://docs.python.org/3.11/library/functools.html)
-- [Класс-декоратор и декоратор класса](https://tirinox.ru/class-decorator/)
+- [Декораторы](https://advpyneng.readthedocs.io/ru/latest/book/08_decorators/index.html){:target="_blank"}
+- [Примеры декораторов](https://github.com/natenka/advpyneng-examples-exercises/tree/master/examples/08_decorators){:target="_blank"}
+- [Примеры декораторов](https://realpython.com/primer-on-python-decorators/){:target="_blank"}
+- [Модуль functools](https://docs.python.org/3.11/library/functools.html){:target="_blank"}
+- [Класс-декоратор и декоратор класса](https://tirinox.ru/class-decorator/){:target="_blank"}
