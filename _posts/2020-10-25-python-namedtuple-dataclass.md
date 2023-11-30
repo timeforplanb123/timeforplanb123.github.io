@@ -1,7 +1,7 @@
 ---
 title: collections.namedtuple, typing.NamedTuple и Data classes 
 classes: wide
-excerpt: "collections.namedtuple, typing.NamedTuple и Data classes"
+excerpt: "collections.namedtuple, typing.NamedTuple и Data classes."
 categories:
   - code
   - notes
