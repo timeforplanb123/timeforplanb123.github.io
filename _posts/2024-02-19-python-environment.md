@@ -277,7 +277,7 @@ poetry install
 
 Poetry создает виртуальное окружение после указания Python-интерпретатора командой `poetry env use` или во время установки проекта, выполненной командой `poetry install`. При создании виртуального окружения poetry опирается на `pyproject.toml` и версию Python, указанную явно, с помощью `pyenv local` или `poetry env use`, иначе используется версия, которая использовалась при установке poetry.
 
-### pyenv-virtualenv
+## pyenv-virtualenv
 
 Вместо связки pyenv + virtualenv + virtualenvwrapper, можно использовать pyenv + [pyenv-virtualenv](https://github.com/pyenv/pyenv-virtualenv){:target="_blank"}. pyenv-virtualenv - это плагин, который поставляется в коробке с pyenv. Плагин хорош тем, что он не просто расширяет интерфейс pyenv возможностями virtualenv, а комбинируется с pyenv для полноценной работы с Python и виртуальными окружениями. Хотя, мне больше нравится идея использования исходных проектов, этот плагин нельзя обойти стороной.
 
