@@ -9,7 +9,7 @@ tags:
 toc: true
 toc_label: "Getting Started"
 ---
-Актуально для Ubuntu 22.04 с system python 3.10 
+Актуально для Ubuntu 22.04 с system Python 3.10 
 {: .notice--info}
 
 Чтобы изолировать рабочие окружения я использую [pyenv](https://github.com/pyenv/pyenv){:target="_blank"} + [virtualenv](https://github.com/pypa/virtualenv){:target="_blank"} + [virtualenvwrapper](https://github.com/python-virtualenvwrapper/virtualenvwrapper){:target="_blank"}. Для работы с проектами добавляю [poetry](https://python-poetry.org/){:target="_blank"}. 
