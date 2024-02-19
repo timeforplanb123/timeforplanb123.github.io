@@ -6,13 +6,15 @@ categories:
 tags:
   - code
   - python
+toc: true
+toc_label: "Getting Started"
 ---
 Актуально для Ubuntu 22.04 с system python 3.10 
 {: .notice--info}
 
 Чтобы изолировать рабочие окружения я использую [pyenv](https://github.com/pyenv/pyenv){:target="_blank"} + [virtualenv](https://github.com/pypa/virtualenv){:target="_blank"} + [virtualenvwrapper](https://github.com/python-virtualenvwrapper/virtualenvwrapper){:target="_blank"}. Для работы с проектами добавляю [poetry](https://python-poetry.org/){:target="_blank"}. 
 
-### Подготовка Ubuntu
+## Подготовка Ubuntu
 
 Сперва ставлю недостающие пакеты и библиотеки:
 ```bash
@@ -40,7 +42,7 @@ sudo apt install \
 
 Это нужно для установки и безошибочной работы всех указанных выше инструментов.
 
-### pyenv
+## pyenv
 
 Все дальнейшие действия выполняю из под пользователя, находясь в домашнем каталоге, root не использую.  
 Устанавливаю pyenv:
@@ -66,7 +68,7 @@ pyenv uninstall 3.9.5
 ```
 pyenv я использую только для установки дополнительных версий Python. Для работы с виртуальными окружениями мне нравятся virtualenv и virtualenvwrapper.
 
-### virtualenv + virtualenvwrapper
+## virtualenv + virtualenvwrapper
 
 Устанавливаю virtualenv:
 ```bash
@@ -154,7 +156,7 @@ deactivate
 rmvirtualenv 3.9.5
 ```
 
-### poetry
+## poetry
 
 Для работы с packages использую poetry. Устанавливаю глобально, в систему:
 ```bash
@@ -313,11 +315,11 @@ pyenv uninstall pyvenv398
 
 [Подробнее о pyenv-virtualenv](https://github.com/pyenv/pyenv-virtualenv/blob/master/README.md){:target="_blank"}.
 
-### vim
+## vim
 
 Продолжая тему подготовки рабочего окружения для Python, оставлю линк на [инструкцию по настройке vim](https://timeforplanb123.github.io/code/vim-python/){:target="_blank"}.
 
-### Полезные ссылки
+## Полезные ссылки
 
 - [раз](https://gist.github.com/wronk/a902185f5f8ed018263d828e1027009b){:target="_blank"}
 - [два](https://pyneng.readthedocs.io/ru/latest/book/01_intro/virtualenv.html){:target="_blank"}
