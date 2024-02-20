@@ -124,20 +124,18 @@ Plugin 'gmarik/Vundle.vim'
 " add all your plugins here (note older versions of Vundle
 " used Bundle instead of Plugin)
 
-" All of your Plugins must be added before the following line
-call vundle#end()            " required
-filetype plugin indent on    " required
-" To ignore plugin indent changes, instead use:
-"filetype plugin on
-"
 " Brief help
 " :PluginList       - lists configured plugins
 " :PluginInstall    - installs plugins; append `!` to update or just :PluginUpdate
 " :PluginSearch foo - searches for foo; append `!` to refresh local cache
 " :PluginClean      - confirms removal of unused plugins; append `!` to auto-approve removal
-"
 " see :h vundle for more details or wiki for FAQ
-" Put your non-Plugin stuff after this line
+
+" all of your Plugins must be added before the following line
+call vundle#end()            " required
+" to ignore plugin indent changes, instead use:
+" filetype plugin on
+filetype plugin indent on    " required
 ```
 Теперь разберемся, как устанавливать и удалять плагины.
 
@@ -146,7 +144,7 @@ filetype plugin indent on    " required
     <a href="{{ site.baseurl }}/assets/images/vimrc/nerdtree.png"><img src="{{ site.baseurl }}/assets/images/vimrc/nerdtree.png"></a>
 </figure>
 
-Достаточно добавить `Plugin 'scrooloose/nerdtree'` между строками `call vundle#begin()` и `call vundle#end()` (там, где написано `add all your plugins`) и выполнить `:PluginInstall`
+Достаточно добавить `Plugin 'scrooloose/nerdtree'` между строками `call vundle#begin()` и `call vundle#end()` (там, где написано `add all your plugins here`) и выполнить `:PluginInstall`
 <figure>
     <a href="{{ site.baseurl }}/assets/images/vimrc/plugin_install.png"><img src="{{ site.baseurl }}/assets/images/vimrc/plugin_install.png"></a>
 </figure>
@@ -168,7 +166,7 @@ Plugin 'jistr/vim-nerdtree-tabs'
 Мы, все ещё, не вышли из vim.
 Проверим список установленных плагинов:
 ```text
-`:PluginList
+:PluginList
 ```
 Сохраним и выйдем из vim:
 ```text
@@ -186,7 +184,7 @@ vim +PluginList
 
 ### Key combinations
 
-Надо, надо, ребята, потратить свое время на изучение основных команд vim. Свои основные кнопки написал в самом низу страницы.
+Надо, надо, ребята, потратить свое время на изучение основных команд vim. Свои основные кнопки написал [в самом низу страницы](https://timeforplanb123.github.io/code/vim-python/#hotkeys).
 
 ### Split Layouts
 
@@ -195,7 +193,7 @@ vim +PluginList
     <a href="{{ site.baseurl }}/assets/images/vimrc/splits.png"><img src="{{ site.baseurl }}/assets/images/vimrc/splits.png"></a>
 </figure>
 
-Настроим зоны для новых сплитов (новые вертикальные будут открываться справа, горизонтальные - внизу):
+Настроим зоны для новых сплитов (новые вертикальные будут открываться справа, горизонтальные - снизу):
 ```text
 set splitbelow
 set splitright
@@ -214,7 +212,7 @@ Ctrl+K переключиться вверх
 Ctrl+L переключиться вправо
 Ctrl+H переключиться влево
 ```
-nnoremap переназначает одну комбинацию клавиш на другую, при работе в Normal Mode. Например, было `<Ctrl+W><Ctrl+J>`, стало `<Ctrl+J>`. При этом `<Ctrl+W>` также будет работать.
+`nnoremap` переназначает одну комбинацию клавиш на другую, при работе в Normal Mode. Например, было `<Ctrl+W><Ctrl+J>`, стало `<Ctrl+J>`. При этом `<Ctrl+W>` также будет работать.
 [Подробнее](http://stackoverflow.com/questions/3776117/what-is-the-difference-between-the-remap-noremap-nnoremap-and-vnoremap-mapping){:target="_blank"}
 
 Чтобы создать новый split в vim существуют команды:
@@ -232,7 +230,7 @@ split
     <a href="{{ site.baseurl }}/assets/images/vimrc/code_folding.png"><img src="{{ site.baseurl }}/assets/images/vimrc/code_folding.png"></a>
 </figure>
 
-Добавляем в наш .vimrc:
+Добавляем в наш `~/.vimrc`:
 ```text
 " Enable folding
 set foldmethod=indent
@@ -278,10 +276,10 @@ Plugin 'vim-scripts/indentpython.vim'
 
 Лишние пробелы в коде лучше сразу удалять. Создадим флаг и подсветим красным:
 ```text
-" Use the below highlight group when displaying bad whitespace is desired.
+" use the below highlight group when displaying bad whitespace is desired.
 highlight BadWhitespace ctermbg=red guibg=red
 
-" Make trailing whitespace be flagged as bad.
+" make trailing whitespace be flagged as bad.
 au BufRead,BufNewFile *.py,*.pyw,*.c,*.h match BadWhitespace /\s\+$/
 ```
 <figure>
@@ -373,11 +371,12 @@ cd ~/.vim/pack/coc/start
 git clone --branch release https://github.com/neoclide/coc.nvim.git --depth=1
 vim -c "helptags coc.nvim/doc/ | q"
 ```
-Находясь в `~/.vimrc`, с помощью встроенного менеджера, установим `coc-python`:
+Находясь в `~/.vimrc`, с помощью встроенного менеджера, установим `coc-python`, `coc-pyright` ([Implemented coc extensions](https://github.com/neoclide/coc.nvim/wiki/Using-coc-extensions#implemented-coc-extensions){:target="_blank"}):
 ```text
 :CocInstall coc-python
+:CocInstall coc-pyright
 ```
-Откроем какой-нибудь python-скрипт, и, поскольку мы уже в нужном виртуальном окружении(настроили раньше, в [Virtualenv Support](https://timeforplanb123.github.io/code/vim-python/#virtualenv-support)), переключим интерпретатор на работу с `Jedi` в этом же окружении. Делается это снова встроенным менеджером:
+Откроем какой-нибудь python-скрипт, и, поскольку мы уже в нужном виртуальном окружении(настроили раньше, в [Virtualenv Support](https://timeforplanb123.github.io/code/vim-python/#virtualenv-support)), переключим интерпретатор на работу с `Jedi` в этом же окружении. Делается это снова встроенным менеджером:  
 ```text
 :CocCommand
 # здесь мы должны выбрать то виртуальное окружение, куда раньше установили Jedi
@@ -507,7 +506,7 @@ filetype plugin on
 ```
 Добавим подсветку YAML, JSON для `vim-markdown`, разрешим открывать ссылки на `.md` в новых вкладках:
 ```text
-" vim markdown plugin options - https://github.com/plasticboy/vim-markdown
+" vim markdown plugin options - https://github.com/preservim/vim-markdown
 let g:vim_markdown_frontmatter = 1
 let g:vim_markdown_json_frontmatter = 1
 let g:vim_markdown_edit_url_in = 'tab'
@@ -665,6 +664,7 @@ nnoremap <C-Right> :tabnext<CR>
 nnoremap <silent> <C-Down> :execute 'silent! tabmove ' . (tabpagenr()-2)<CR>
 nnoremap <silent> <C-Up> :execute 'silent! tabmove ' . (tabpagenr()+1)<CR>
 ```
+
 Ctrl+Left - переключить на предыдущую вкладку
 Ctrl+Right - переключить на следуюущую вкладку
 Alt+Left - переместить вкладку назад
@@ -692,7 +692,7 @@ nnoremap <S-F7> :sbprevious<CR>
 
 Добавим полезную настройку - разрешим хранить историю после выхода из файла:
 ```text
-" Maintain undo history between sessions
+" maintain undo history between sessions
 set undofile
 set undodir=~/.vim/undodir
 ```
