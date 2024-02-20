@@ -317,7 +317,7 @@ pyenv uninstall pyvenv398
 
 ## vim
 
-Продолжая тему подготовки рабочего окружения для Python, оставлю линк на [инструкцию по настройке vim](https://timeforplanb123.github.io/code/vim-python/){:target="_blank"}.
+Продолжая тему подготовки рабочего окружения для Python, оставлю [линк](https://timeforplanb123.github.io/code/vim-python/){:target="_blank"} на инструкцию по настройке vim.
 
 ## Полезные ссылки
 
