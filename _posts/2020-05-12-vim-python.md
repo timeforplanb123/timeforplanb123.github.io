@@ -9,7 +9,7 @@ tags:
 toc: true
 toc_label: "Getting Started"
 ---
-**UPD 2024-02-20:** актуально для Ubuntu 22.04 с system Python 3.10
+**UPD 2024-02-21:** актуально для Ubuntu 22.04 с system Python 3.10
 {: .notice--info}
 
 Расскажу о своей настройке Vim для работы с Python day by day.
