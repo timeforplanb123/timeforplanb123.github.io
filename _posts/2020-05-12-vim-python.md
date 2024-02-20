@@ -84,7 +84,7 @@ Python 3.10.12 (main, Nov 20 2023, 15:14:05) [GCC 11.4.0] on linux
 Type "help", "copyright", "credits" or "license" for more information.
 >>> 
 ```
-Вероятно, дальше будет немного проще, если открыть мой [.vimrc](){:target="_blank"}.
+Вероятно, дальше будет немного проще, если открыть мой [.vimrc](https://github.com/timeforplanb123/timeforplanb123.github.io/blob/master/_posts/.vimrc){:target="_blank"}.
 
 ## Плагины vim
 
@@ -376,7 +376,8 @@ vim -c "helptags coc.nvim/doc/ | q"
 :CocInstall coc-python
 :CocInstall coc-pyright
 ```
-Откроем какой-нибудь python-скрипт, и, поскольку мы уже в нужном виртуальном окружении(настроили раньше, в [Virtualenv Support](https://timeforplanb123.github.io/code/vim-python/#virtualenv-support)), переключим интерпретатор на работу с `Jedi` в этом же окружении. Делается это снова встроенным менеджером:  
+Откроем какой-нибудь python-скрипт, и, поскольку мы уже в нужном виртуальном окружении(настроили раньше, в [Virtualenv Support](https://timeforplanb123.github.io/code/vim-python/#virtualenv-support)), переключим интерпретатор на работу с `Jedi` в этом же окружении. Делается это снова встроенным менеджером:
+
 ```text
 :CocCommand
 # здесь мы должны выбрать то виртуальное окружение, куда раньше установили Jedi
@@ -384,6 +385,7 @@ vim -c "helptags coc.nvim/doc/ | q"
 
 python.setInterpreter
 ```
+
 В появившемся окне выбираем виртуальное окружение, куда ранее установили `Jedi`. Вот в картинках, до момента выбора окружения:
 <figure>
     <a href="{{ site.baseurl }}/assets/images/vimrc/coccommand.png"><img src="{{ site.baseurl }}/assets/images/vimrc/coccommand.png"></a>
@@ -665,9 +667,9 @@ nnoremap <silent> <C-Down> :execute 'silent! tabmove ' . (tabpagenr()-2)<CR>
 nnoremap <silent> <C-Up> :execute 'silent! tabmove ' . (tabpagenr()+1)<CR>
 ```
 
-Ctrl+Left - переключить на предыдущую вкладку
-Ctrl+Right - переключить на следуюущую вкладку
-Alt+Left - переместить вкладку назад
+Ctrl+Left - переключить на предыдущую вкладку  
+Ctrl+Right - переключить на следуюущую вкладку  
+Alt+Left - переместить вкладку назад  
 Alt+Right - переместить вкладку вперед
 
 Вкладки в vim:
